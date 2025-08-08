@@ -1,1 +1,2 @@
     //"DealerRndDBConnectionString": "Data Source=localhost;Initial Catalog=DealerRndDB;User ID=sa;Password=Alikompang123#;Trust Server Certificate=True"
+    //"DealerRndDBConnectionString": "Data Source=ANMISTRZ\\SQLEXPRESS;Initial Catalog=DealerRndDBMigrate;User ID=localhost;Password=anas123;Encrypt=True;Trust Server Certificate=True"

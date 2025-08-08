@@ -32,3 +32,21 @@ C:\ANAS\Project NET\WebPromotion\ClassLibrary.DAL\obj\Debug\net8.0\refint\Dealer
 C:\ANAS\Project NET\WebPromotion\ClassLibrary.DAL\obj\Debug\net8.0\DealerApi.DAL.pdb
 C:\ANAS\Project NET\WebPromotion\ClassLibrary.DAL\obj\Debug\net8.0\DealerApi.DAL.genruntimeconfig.cache
 C:\ANAS\Project NET\WebPromotion\ClassLibrary.DAL\obj\Debug\net8.0\ref\DealerApi.DAL.dll
+D:\Users\bsi80252\Exercise\Learn C#\Velora App\VeloraApp\ClassLibrary.DAL\bin\Debug\net8.0\DealerApi.DAL.deps.json
+D:\Users\bsi80252\Exercise\Learn C#\Velora App\VeloraApp\ClassLibrary.DAL\bin\Debug\net8.0\DealerApi.DAL.runtimeconfig.json
+D:\Users\bsi80252\Exercise\Learn C#\Velora App\VeloraApp\ClassLibrary.DAL\bin\Debug\net8.0\DealerApi.DAL.dll
+D:\Users\bsi80252\Exercise\Learn C#\Velora App\VeloraApp\ClassLibrary.DAL\bin\Debug\net8.0\DealerApi.DAL.pdb
+D:\Users\bsi80252\Exercise\Learn C#\Velora App\VeloraApp\ClassLibrary.DAL\bin\Debug\net8.0\DealerApi.Entities.dll
+D:\Users\bsi80252\Exercise\Learn C#\Velora App\VeloraApp\ClassLibrary.DAL\bin\Debug\net8.0\DealerApi.Entities.pdb
+D:\Users\bsi80252\Exercise\Learn C#\Velora App\VeloraApp\ClassLibrary.DAL\obj\Debug\net8.0\DealerApi.DAL.csproj.AssemblyReference.cache
+D:\Users\bsi80252\Exercise\Learn C#\Velora App\VeloraApp\ClassLibrary.DAL\obj\Debug\net8.0\DealerApi.DAL.GeneratedMSBuildEditorConfig.editorconfig
+D:\Users\bsi80252\Exercise\Learn C#\Velora App\VeloraApp\ClassLibrary.DAL\obj\Debug\net8.0\DealerApi.DAL.AssemblyInfoInputs.cache
+D:\Users\bsi80252\Exercise\Learn C#\Velora App\VeloraApp\ClassLibrary.DAL\obj\Debug\net8.0\DealerApi.DAL.AssemblyInfo.cs
+D:\Users\bsi80252\Exercise\Learn C#\Velora App\VeloraApp\ClassLibrary.DAL\obj\Debug\net8.0\DealerApi.DAL.csproj.CoreCompileInputs.cache
+D:\Users\bsi80252\Exercise\Learn C#\Velora App\VeloraApp\ClassLibrary.DAL\obj\Debug\net8.0\DealerApi.DAL.sourcelink.json
+D:\Users\bsi80252\Exercise\Learn C#\Velora App\VeloraApp\ClassLibrary.DAL\obj\Debug\net8.0\DealerAp.A56045D1.Up2Date
+D:\Users\bsi80252\Exercise\Learn C#\Velora App\VeloraApp\ClassLibrary.DAL\obj\Debug\net8.0\DealerApi.DAL.dll
+D:\Users\bsi80252\Exercise\Learn C#\Velora App\VeloraApp\ClassLibrary.DAL\obj\Debug\net8.0\refint\DealerApi.DAL.dll
+D:\Users\bsi80252\Exercise\Learn C#\Velora App\VeloraApp\ClassLibrary.DAL\obj\Debug\net8.0\DealerApi.DAL.pdb
+D:\Users\bsi80252\Exercise\Learn C#\Velora App\VeloraApp\ClassLibrary.DAL\obj\Debug\net8.0\DealerApi.DAL.genruntimeconfig.cache
+D:\Users\bsi80252\Exercise\Learn C#\Velora App\VeloraApp\ClassLibrary.DAL\obj\Debug\net8.0\ref\DealerApi.DAL.dll

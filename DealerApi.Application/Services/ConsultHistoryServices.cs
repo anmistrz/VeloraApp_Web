@@ -40,12 +40,6 @@ public class ConsultHistoryServices : IConsultHistoryServices
             if (dataDealerCar.DealerId <= 0)
                 throw new ArgumentException("DealerId must be greater than 0");
 
-            Console.WriteLine($"ConsultHistoryServices: Processing request for {dataCustomer.Email}");
-            Console.WriteLine($"ConsultHistoryServices: Customer Name: {dataCustomer.FirstName} {dataCustomer.LastName}");
-            Console.WriteLine($"ConsultHistoryServices: DealerCarId: {dataDealerCar.DealerCarId}, DealerId: {dataDealerCar.DealerId}");
-            Console.WriteLine($"ConsultHistoryServices: ConsultDate: {dataConsultHistory.ConsultDate}, SalesPersonId: {dataConsultHistory.SalesPersonId}");
-            Console.WriteLine($"ConsultHistoryServices: Budget: {dataConsultHistory.Budget}, Note: {dataConsultHistory.Note}");
-
             // Map from Application DTO to DAL DTO
             var dtCustomer = new Customer
             {

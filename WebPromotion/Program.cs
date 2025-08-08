@@ -8,6 +8,7 @@ using WebPromotion.Business;
 using WebPromotion.Business.Interface;
 using WebPromotion.Services;
 using WebPromotion.Services.TestDrive;
+using WebPromotion.Services.Interface;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -41,11 +42,16 @@ builder.Services.AddHttpClient<ITestDriveService, TestDriveServices>(client =>
 {
     client.BaseAddress = new Uri(builder.Configuration["ApiBaseUrl"]);
 });
+builder.Services.AddHttpClient<IAccountServices, AccountService>(client =>
+{
+    client.BaseAddress = new Uri(builder.Configuration["ApiBaseUrl"]);
+});
 
 // Register Business Logic services
 builder.Services.AddScoped<IDealerCarBusiness, DealerCarbusiness>();
 builder.Services.AddScoped<IConsultationBusiness, ConsultationBusiness>();
 builder.Services.AddScoped<ITestDriveBusiness, TestDriveBusiness>();
+builder.Services.AddScoped<IAccountBusiness, AccountBusiness>();
 
 // Register MVC services
 builder.Services.AddScoped<IConsultationServices, ConsultationServices>();

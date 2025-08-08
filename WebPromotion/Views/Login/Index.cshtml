@@ -1,7 +1,6 @@
-@page
-@model WebPromotion.Views.Login.Index
+@model WebPromotion.ViewModels.LoginViewModels;
 @{
-    @* ViewData["Title"] = "Index"; *@
+    ViewData["Title"] = "Login Page";
 }
 
 
@@ -15,21 +14,21 @@
                     <div class="col-md-7 gap-2">
                         <h3 class="mb-4 d-flex align-items-center gap-2">Login to <img src="~/img/velora_logo.jpg" alt="Logo" style="width: 100px; height: auto;" /></h3> 
                         <p class="mb-4"> Your gateway to a world of possibilities. Join us and explore the future.</p>
-                        <form action="#" method="post">
-                        <div class="form-group first mb-3">
-                            <label for="username">Username</label>
-                            <input type="text" class="form-control" placeholder="your-email@gmail.com" id="username">
-                        </div>
-                        <div class="form-group last mb-3">
-                            <label for="password">Password</label>
-                            <input type="password" class="form-control" placeholder="Your Password" id="password">
-                        </div>
-                        
-                        <div class="d-flex mb-5 align-items-center">
-                            <span class="ml-auto"><a href="#" class="forgot-pass">Forgot Password</a></span> 
-                        </div>
+                        <form action="@Url.Action("Login", "Login")" method="post">
+                            <div class="mb-3">
+                                <label for="email">Email</label>
+                            <input asp-for="Email" type="text" class="form-control" placeholder="Your Email" id="email">
+                            </div>
+                            <div class="mb-3">
+                                <label for="password">Password</label>
+                                <input asp-for="Password" type="password" class="form-control" placeholder="Your Password" id="password">
+                            </div>
+                            
+                            <div class="d-flex mb-5 align-items-center">
+                                <span class="ml-auto"><a href="#" class="forgot-pass">Forgot Password</a></span> 
+                            </div>
 
-                        <input type="submit" value="Log In" class="btn btn-block btn-primary">
+                            <button type="submit" class="btn btn-block btn-primary w-100">Log In</button>
 
                         </form>
                     </div>
@@ -38,3 +37,15 @@
         </div>
     </div>
 </div>
+
+@* Success Modal *@
+@if (ViewBag.SuccessModal != null)
+{
+    @await Component.InvokeAsync("ModalComponent", ViewBag.SuccessModal)
+}
+
+@* Error Modal *@
+@if (ViewBag.ErrorModal != null)
+{
+    @await Component.InvokeAsync("ModalComponent", ViewBag.ErrorModal)
+}

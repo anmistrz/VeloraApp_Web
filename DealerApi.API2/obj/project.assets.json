@@ -4493,23 +4493,23 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\anasa\\.nuget\\packages\\": {},
+    "D:\\Users\\bsi80252\\.nuget\\packages\\": {},
     "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\ANAS\\Project NET\\WebPromotion\\DealerApi.API2\\DealerApi.API.csproj",
+      "projectUniqueName": "D:\\Users\\bsi80252\\Exercise\\Learn C#\\Velora App\\VeloraApp\\DealerApi.API2\\DealerApi.API.csproj",
       "projectName": "DealerApi.API",
-      "projectPath": "C:\\ANAS\\Project NET\\WebPromotion\\DealerApi.API2\\DealerApi.API.csproj",
-      "packagesPath": "C:\\Users\\anasa\\.nuget\\packages\\",
-      "outputPath": "C:\\ANAS\\Project NET\\WebPromotion\\DealerApi.API2\\obj\\",
+      "projectPath": "D:\\Users\\bsi80252\\Exercise\\Learn C#\\Velora App\\VeloraApp\\DealerApi.API2\\DealerApi.API.csproj",
+      "packagesPath": "D:\\Users\\bsi80252\\.nuget\\packages\\",
+      "outputPath": "D:\\Users\\bsi80252\\Exercise\\Learn C#\\Velora App\\VeloraApp\\DealerApi.API2\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
       ],
       "configFilePaths": [
-        "C:\\Users\\anasa\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "D:\\Users\\bsi80252\\AppData\\Roaming\\NuGet\\NuGet.Config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
       ],
@@ -4524,14 +4524,14 @@
         "net8.0": {
           "targetAlias": "net8.0",
           "projectReferences": {
-            "C:\\ANAS\\Project NET\\WebPromotion\\ClassLibrary.BO\\DealerApi.Entities.csproj": {
-              "projectPath": "C:\\ANAS\\Project NET\\WebPromotion\\ClassLibrary.BO\\DealerApi.Entities.csproj"
+            "D:\\Users\\bsi80252\\Exercise\\Learn C#\\Velora App\\VeloraApp\\ClassLibrary.BO\\DealerApi.Entities.csproj": {
+              "projectPath": "D:\\Users\\bsi80252\\Exercise\\Learn C#\\Velora App\\VeloraApp\\ClassLibrary.BO\\DealerApi.Entities.csproj"
             },
-            "C:\\ANAS\\Project NET\\WebPromotion\\ClassLibrary.DAL\\DealerApi.DAL.csproj": {
-              "projectPath": "C:\\ANAS\\Project NET\\WebPromotion\\ClassLibrary.DAL\\DealerApi.DAL.csproj"
+            "D:\\Users\\bsi80252\\Exercise\\Learn C#\\Velora App\\VeloraApp\\ClassLibrary.DAL\\DealerApi.DAL.csproj": {
+              "projectPath": "D:\\Users\\bsi80252\\Exercise\\Learn C#\\Velora App\\VeloraApp\\ClassLibrary.DAL\\DealerApi.DAL.csproj"
             },
-            "C:\\ANAS\\Project NET\\WebPromotion\\DealerApi.Application\\DealerApi.Application.csproj": {
-              "projectPath": "C:\\ANAS\\Project NET\\WebPromotion\\DealerApi.Application\\DealerApi.Application.csproj"
+            "D:\\Users\\bsi80252\\Exercise\\Learn C#\\Velora App\\VeloraApp\\DealerApi.Application\\DealerApi.Application.csproj": {
+              "projectPath": "D:\\Users\\bsi80252\\Exercise\\Learn C#\\Velora App\\VeloraApp\\DealerApi.Application\\DealerApi.Application.csproj"
             }
           }
         }

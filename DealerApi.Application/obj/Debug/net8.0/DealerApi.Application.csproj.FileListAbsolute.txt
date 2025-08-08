@@ -34,3 +34,21 @@ C:\ANAS\Project NET\WebPromotion\DealerApi.Application\obj\Debug\net8.0\DealerAp
 C:\ANAS\Project NET\WebPromotion\DealerApi.Application\obj\Debug\net8.0\refint\DealerApi.Application.dll
 C:\ANAS\Project NET\WebPromotion\DealerApi.Application\obj\Debug\net8.0\DealerApi.Application.pdb
 C:\ANAS\Project NET\WebPromotion\DealerApi.Application\obj\Debug\net8.0\ref\DealerApi.Application.dll
+D:\Users\bsi80252\Exercise\Learn C#\Velora App\VeloraApp\DealerApi.Application\bin\Debug\net8.0\DealerApi.Application.deps.json
+D:\Users\bsi80252\Exercise\Learn C#\Velora App\VeloraApp\DealerApi.Application\bin\Debug\net8.0\DealerApi.Application.dll
+D:\Users\bsi80252\Exercise\Learn C#\Velora App\VeloraApp\DealerApi.Application\bin\Debug\net8.0\DealerApi.Application.pdb
+D:\Users\bsi80252\Exercise\Learn C#\Velora App\VeloraApp\DealerApi.Application\bin\Debug\net8.0\DealerApi.DAL.dll
+D:\Users\bsi80252\Exercise\Learn C#\Velora App\VeloraApp\DealerApi.Application\bin\Debug\net8.0\DealerApi.Entities.dll
+D:\Users\bsi80252\Exercise\Learn C#\Velora App\VeloraApp\DealerApi.Application\bin\Debug\net8.0\DealerApi.Entities.pdb
+D:\Users\bsi80252\Exercise\Learn C#\Velora App\VeloraApp\DealerApi.Application\bin\Debug\net8.0\DealerApi.DAL.pdb
+D:\Users\bsi80252\Exercise\Learn C#\Velora App\VeloraApp\DealerApi.Application\obj\Debug\net8.0\DealerApi.Application.csproj.AssemblyReference.cache
+D:\Users\bsi80252\Exercise\Learn C#\Velora App\VeloraApp\DealerApi.Application\obj\Debug\net8.0\DealerApi.Application.GeneratedMSBuildEditorConfig.editorconfig
+D:\Users\bsi80252\Exercise\Learn C#\Velora App\VeloraApp\DealerApi.Application\obj\Debug\net8.0\DealerApi.Application.AssemblyInfoInputs.cache
+D:\Users\bsi80252\Exercise\Learn C#\Velora App\VeloraApp\DealerApi.Application\obj\Debug\net8.0\DealerApi.Application.AssemblyInfo.cs
+D:\Users\bsi80252\Exercise\Learn C#\Velora App\VeloraApp\DealerApi.Application\obj\Debug\net8.0\DealerApi.Application.csproj.CoreCompileInputs.cache
+D:\Users\bsi80252\Exercise\Learn C#\Velora App\VeloraApp\DealerApi.Application\obj\Debug\net8.0\DealerApi.Application.sourcelink.json
+D:\Users\bsi80252\Exercise\Learn C#\Velora App\VeloraApp\DealerApi.Application\obj\Debug\net8.0\DealerAp.C6A792E3.Up2Date
+D:\Users\bsi80252\Exercise\Learn C#\Velora App\VeloraApp\DealerApi.Application\obj\Debug\net8.0\DealerApi.Application.dll
+D:\Users\bsi80252\Exercise\Learn C#\Velora App\VeloraApp\DealerApi.Application\obj\Debug\net8.0\refint\DealerApi.Application.dll
+D:\Users\bsi80252\Exercise\Learn C#\Velora App\VeloraApp\DealerApi.Application\obj\Debug\net8.0\DealerApi.Application.pdb
+D:\Users\bsi80252\Exercise\Learn C#\Velora App\VeloraApp\DealerApi.Application\obj\Debug\net8.0\ref\DealerApi.Application.dll
