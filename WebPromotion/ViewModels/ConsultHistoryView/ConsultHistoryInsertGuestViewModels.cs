@@ -33,7 +33,6 @@ namespace WebPromotion.ViewModels.ConsultHistoryView
 
         public decimal? Budget { get; set; }
 
-        [Required(ErrorMessage = "Consultation date is required")]
         public DateTime ConsultDate { get; set; }
 
         public string? Note { get; set; }

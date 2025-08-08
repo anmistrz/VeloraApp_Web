@@ -63,7 +63,7 @@ namespace WebPromotion.Controllers
                 // Set default values for the dropdowns
 
 
-
+                Console.WriteLine("ErrorModal", TempData["ErrorModal"]);
                 // Handle modal dari TempData setelah redirect
                 if (TempData["SuccessModal"] != null)
                 {
@@ -118,7 +118,7 @@ namespace WebPromotion.Controllers
                         Email = model.Email,
                         PhoneNumber = model.PhoneNumber,
                         DealerCarUnitId = int.Parse(getDealerCarUnit[1].Trim()),
-                        ConsultDate = model.ConsultDate,
+                        // ConsultDate = model.ConsultDate,
                         Note = model.Note,
                         SalesPersonId = model.SalesPersonId,
                         Budget = model.Budget ?? 0,
