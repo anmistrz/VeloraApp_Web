@@ -52,6 +52,9 @@ public static class ServiceExtensions
         services.AddScoped<IConsultHistoryServices, ConsultHistoryServices>();
         services.AddScoped<ITestDriveServices, TestDriveServices>();
         services.AddScoped<IUserAuthServices, UserAuthServices>();
+        services.AddScoped<INotificationServices, NotificationServices>();
+        services.AddScoped<ISalesPersonServices, SalesPersonServices>();
+        services.AddScoped<IDealerCarUnitServices, DealerCarUnitServices>();
         // Add other services as needed
 
         // Removed recursive call to AddApplicationServices()

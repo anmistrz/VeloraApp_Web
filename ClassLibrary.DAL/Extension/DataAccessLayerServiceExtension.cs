@@ -1,4 +1,5 @@
 using ClassLibrary.DAL;
+using ClassLibrary.DAL.DAL;
 using ClassLibrary.DAL.Interfaces;
 using DealerApi.DAL;
 using DealerApi.DAL.Context;
@@ -37,6 +38,9 @@ namespace DealerApi.DAL.Extension
             services.AddScoped<IConsultHistory, ConsultHistoryDAL>();
             services.AddScoped<ITestDrive, TestDriveDAL>();
             services.AddScoped<IUserAuth, UserAuthDAL>();
+            services.AddScoped<INotifications, NotificationDAL>();
+            services.AddScoped<ISalesPerson, SalesPersonDAL>();
+            services.AddScoped<IDealerCarUnit, DealerCarUnitDAL>();
             // Add other services as needed
 
             return services;

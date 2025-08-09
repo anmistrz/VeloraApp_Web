@@ -38,30 +38,29 @@ namespace DealerApi.DAL.DAL
 
                 if (validateCustomer == null)
                 {
-                    var customer = new Customer
+                    var customer = new CustomerTemp
                     {
                         FirstName = dataCustomer.FirstName,
                         LastName = dataCustomer.LastName,
                         Email = dataCustomer.Email,
                         PhoneNumber = dataCustomer.PhoneNumber,
                         UserName = "Guest",
-                        IsGuest = true
                     };
 
                     Console.WriteLine($"Customer created: {customer.FirstName} {customer.LastName} - {customer.Email}");
 
-                    _context.Customers.Add(customer);
+                    _context.CustomerTemps.Add(customer);
                     await _context.SaveChangesAsync();
 
-                    var findCustomer = await _context.Customers
-                        .FirstOrDefaultAsync(c => c.Email == dataCustomer.Email && c.IsGuest);
+                    var findCustomer = await _context.CustomerTemps
+                        .FirstOrDefaultAsync(c => c.Email == dataCustomer.Email);
                     Console.WriteLine($"TestDriveDAL: Found customer: {findCustomer?.Email}");
 
                     if (findCustomer == null)
                     {
                         throw new Exception("Failed to create customer.");
                     }
-                    dataCustomer.CustomerId = findCustomer.CustomerId;
+                    dataCustomer.CustomerId = findCustomer.CustomerTempId;
                 }
 
                 var dtTestDrive = new TestDrive

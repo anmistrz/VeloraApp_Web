@@ -13,7 +13,7 @@ h2 {
   font-size: 20px; }
 
 .half, .half .container > .row {
-  height: 96vh;
+  height: 100vh;
   min-height: 700px; }
 
 @media (max-width: 991.98px) {
