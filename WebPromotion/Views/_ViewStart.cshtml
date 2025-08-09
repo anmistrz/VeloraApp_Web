@@ -1,3 +1,13 @@
 ﻿@{
-    Layout = "_Layout";
+    var path = Context.Request.Path.ToString().ToLower();
+    if (path.StartsWith("/login") || path.StartsWith("/register"))
+    {
+        Layout = "_LayoutLogin";
+    }
+    else
+    {
+        var userRole = ViewBag.UserRole as string;
+        Console.WriteLine("userRoleeee", userRole);
+        Layout = userRole == "salesPerson" ? "_LayoutSalesPerson" : "_Layout";
+    }
 }

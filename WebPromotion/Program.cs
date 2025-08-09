@@ -9,16 +9,20 @@ using WebPromotion.Business.Interface;
 using WebPromotion.Services;
 using WebPromotion.Services.TestDrive;
 using WebPromotion.Services.Interface;
+using WebPromotion.Middleware;
 
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-builder.Services.AddControllersWithViews();
+builder.Services.AddControllersWithViews(options =>
+{
+    options.Filters.Add<WebPromotion.Filters.SetUserRoleFilter>();
+});
 
 // Configure Auth
-builder.Services.AddAuthentication(defaultScheme: IdentityConstants.ApplicationScheme)
-    .AddIdentityCookies();
+builder.Services.AddAuthentication(defaultScheme: IdentityConstants.ApplicationScheme);
+    // .AddIdentityCookies();
 
 // Add Identity Core services
 builder.Services.AddIdentityCore<IdentityUser>(options => {
@@ -58,6 +62,7 @@ builder.Services.AddScoped<IConsultationServices, ConsultationServices>();
 
 
 
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -70,11 +75,13 @@ if (!app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
-
+app.UseMiddleware<TokenExpiryRedirectMiddleware>();
 app.UseRouting();
 
 app.UseAuthentication();
 app.UseAuthorization();
+
+app.UseStatusCodePagesWithReExecute("/Error/NotFound");
 
 app.MapControllerRoute(
     name: "default",

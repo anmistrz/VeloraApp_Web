@@ -42,6 +42,7 @@ namespace DealerApi.API
                 {
                     return Unauthorized(new { error = "Invalid credentials" });
                 }
+                
                 return Ok(result);
             }
             catch (Exception ex)

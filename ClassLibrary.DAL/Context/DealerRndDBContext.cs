@@ -33,6 +33,8 @@ public partial class DealerRndDBContext : IdentityDbContext
 
     public virtual DbSet<Customer> Customers { get; set; }
 
+    public virtual DbSet<CustomerTemp> CustomerTemps { get; set; }
+
     public virtual DbSet<CustomerRating> CustomerRatings { get; set; }
 
     public virtual DbSet<Dealer> Dealers { get; set; }
@@ -256,6 +258,44 @@ public partial class DealerRndDBContext : IdentityDbContext
             entity.Property(e => e.IsGuest)
                 .HasDefaultValue(true)
                 .HasColumnName("isGuest");
+            entity.Property(e => e.LastName)
+                .IsRequired()
+                .HasMaxLength(20)
+                .IsUnicode(false);
+            entity.Property(e => e.Password)
+                .HasMaxLength(255)
+                .IsUnicode(false);
+            entity.Property(e => e.PhoneNumber)
+                .HasMaxLength(20)
+                .IsUnicode(false);
+            entity.Property(e => e.Province)
+                .HasMaxLength(50)
+                .IsUnicode(false);
+            entity.Property(e => e.UserName)
+                .IsRequired()
+                .HasMaxLength(50)
+                .IsUnicode(false);
+        });
+
+        modelBuilder.Entity<CustomerTemp>(entity =>
+        {
+            entity.Property(e => e.CustomerTempId).HasColumnName("CustomerTempID");
+            entity.Property(e => e.Address).IsUnicode(false);
+            entity.Property(e => e.CreatedAt).HasDefaultValueSql("(sysutcdatetime())");
+            entity.Property(e => e.District)
+                .HasMaxLength(100)
+                .IsUnicode(false);
+            entity.Property(e => e.Email)
+                .IsRequired()
+                .HasMaxLength(100)
+                .IsUnicode(false);
+            entity.Property(e => e.FirstName)
+                .IsRequired()
+                .HasMaxLength(20)
+                .IsUnicode(false);
+            // entity.Property(e => e.IsGuest)
+            //     .HasDefaultValue(true)
+            //     .HasColumnName("isGuest");
             entity.Property(e => e.LastName)
                 .IsRequired()
                 .HasMaxLength(20)
@@ -702,7 +742,6 @@ public partial class DealerRndDBContext : IdentityDbContext
                 .HasMaxLength(20)
                 .IsUnicode(false)
                 .HasDefaultValue("Pending");
-
 
             entity.HasOne(d => d.Customer).WithMany(p => p.TestDrives)
                 .HasForeignKey(d => d.CustomerId)

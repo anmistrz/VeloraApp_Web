@@ -1,5 +1,7 @@
 using System;
+using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
+using ClassLibrary.DAL.Interfaces;
 using DealerApi.Application.DTO;
 using DealerApi.Application.Helpers;
 using DealerApi.Application.Interface;
@@ -11,11 +13,13 @@ namespace DealerApi.Application.Services;
 public class UserAuthServices : IUserAuthServices
 {
     private readonly IUserAuth _userAuthDAL;
+    private readonly ISalesPerson _salesPersonDAL;
     private readonly AppSettings _appSettings;
 
-    public UserAuthServices(IUserAuth userAuthDAL, IOptions<AppSettings> appSettings)
+    public UserAuthServices(IUserAuth userAuthDAL, ISalesPerson salesPersonDAL, IOptions<AppSettings> appSettings)
     {
         _userAuthDAL = userAuthDAL ?? throw new ArgumentNullException(nameof(userAuthDAL));
+        _salesPersonDAL = salesPersonDAL ?? throw new ArgumentNullException(nameof(salesPersonDAL));
         _appSettings = appSettings.Value ?? throw new ArgumentNullException(nameof(appSettings));
     }
 
@@ -89,14 +93,25 @@ public class UserAuthServices : IUserAuthServices
             }
 
             var user = await _userAuthDAL.LoginAsync(loginDTO.Email, loginDTO.Password);
+            var userPersons = await _salesPersonDAL.GetSalesPersonByEmailAsync(loginDTO.Email);
             if (user == null)
             {
                 throw new InvalidOperationException("Invalid login credentials.");
             }
 
+            // Get the first SalesPerson from the collection (if any)
+            var userPerson = userPersons?.FirstOrDefault();
+            var dealerId = userPerson != null ? userPerson.DealerId.ToString() : string.Empty;
+
             //List Claim
-            List<Claim> claims = new List<Claim>();
-            claims.Add(new Claim(ClaimTypes.Email, user.Email));
+            List<Claim> claims = new List<Claim>()
+            {
+                new Claim(JwtRegisteredClaimNames.Sub, user.Id),
+                new Claim(JwtRegisteredClaimNames.Email, user.Email),
+                new Claim(JwtRegisteredClaimNames.GivenName, userPerson != null ? userPerson.FullName ?? string.Empty : string.Empty),
+                new Claim("DealerId", dealerId)
+            };
+            
             var roles = await _userAuthDAL.GetRolesByUserAsync(user.Email);
             if (roles != null && roles.Count > 0)
             {

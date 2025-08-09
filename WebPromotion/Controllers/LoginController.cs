@@ -56,9 +56,6 @@ namespace WebPromotion.Controllers
         {
             try
             {
-                Console.WriteLine($"Attempting login... {model.Email}");
-                Console.WriteLine($"Attempting login with password... {model.Password}");
-                Console.WriteLine($"Model state is valid: {ModelState.IsValid}");
                 if (ModelState.IsValid)
                 {
                     var body = new LoginViewModel
@@ -66,11 +63,17 @@ namespace WebPromotion.Controllers
                         email = model.Email,
                         password = model.Password
                     };
-                    Console.WriteLine($"Model prepared for login: {JsonSerializer.Serialize(body)}");
+                    
                     var result = await _accountBusiness.LoginBusiness(body);
-                    Console.WriteLine($"Login result: {JsonSerializer.Serialize(result)}");
                     if (result != null)
                     {
+                        Response.Cookies.Append("MyJwtCookie", result.Token, new CookieOptions
+                        {
+                            HttpOnly = true,
+                            Secure = true,
+                            SameSite = SameSiteMode.Strict,
+                            Expires = DateTimeOffset.UtcNow.AddHours(1)
+                        });
                         // Set success modal untuk ditampilkan di Index
                         TempData["SuccessModal"] = JsonSerializer.Serialize(new ModalViewModels
                         {
@@ -81,7 +84,7 @@ namespace WebPromotion.Controllers
                             Type = "success"
                         });
 
-                        return RedirectToAction("Index", "Home");
+                        return RedirectToAction("Index", "SalesPerson");
                     }
 
                     Console.WriteLine("Login failed, setting error modal.");
