@@ -1,5 +1,6 @@
 
 // using DealerApi.API2.Middlewares;
+using ClassLibrary.BO.ModelNotConnectDB;
 using DealerApi.Application.Extensions;
 using DealerApi.DAL.Extension;
 using Microsoft.AspNetCore.Authentication.Cookies;
@@ -46,6 +47,7 @@ builder.Services.AddSwaggerGen(c => {
 });
 
 builder.Services.AddApplicationServices(builder.Configuration);
+builder.Services.Configure<EmailSettings>(builder.Configuration.GetSection("EmailSettings"));
 //builder.Services.AddDataAccessLayerServices();
 
 var app = builder.Build();

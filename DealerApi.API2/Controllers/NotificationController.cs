@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using DealerApi.Application.DTO;
 using DealerApi.Application.Interface;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -21,12 +22,12 @@ namespace DealerApi.API2.Controllers
 
         [HttpGet]
         [Authorize(Roles = "salesPerson")]
-        [Route("GetLimitedNotifications/{limit}")]
-        public IActionResult GetLimitedNotifications(int limit)
+        [Route("GetLimitedNotifications/{limit}/{customId}")]
+        public IActionResult GetLimitedNotifications(int limit, int customId)
         {
             try
             {
-                var notifications = _notificationServices.GetLimitNotification(limit);
+                var notifications = _notificationServices.GetLimitNotification(limit, customId);
                 Console.WriteLine($"Fetched {notifications.Count()} notifications with limitController {limit}");
                 return Ok(notifications);
             }
@@ -36,5 +37,112 @@ namespace DealerApi.API2.Controllers
                 return StatusCode(500, "Internal server error");
             }
         }
+
+        [HttpGet]
+        [Authorize(Roles = "salesPerson")]
+        [Route("GetNotificationById/{id}")]
+        public IActionResult GetNotificationById(int id)
+        {
+            try
+            {
+                var notification = _notificationServices.GetNotificationById(id);
+                if (notification != null)
+                {
+                    return Ok(notification);
+                }
+                return NotFound();
+            }
+            catch (Exception ex)
+            {
+                // Log the exception
+                return StatusCode(500, "Internal server error");
+            }
+        }
+
+
+        [HttpGet]
+        [Authorize(Roles = "salesPerson")]
+        [Route("GetAllNotifications")]
+        public IActionResult GetAllNotifications()
+        {
+            try
+            {
+                var notifications = _notificationServices.GetAllNotifications();
+                return Ok(notifications);
+            }
+            catch (Exception ex)
+            {
+                // Log the exception
+                return StatusCode(500, "Internal server error");
+            }
+        }
+
+
+        [HttpGet]
+        [Authorize(Roles = "salesPerson")]
+        [Route("GetUnreadNotifications/{customId}")]
+        public IActionResult GetUnreadNotifications(int customId)
+        {
+            try
+            {
+                var notifications = _notificationServices.GetUnreadNotifications(customId);
+                return Ok(notifications);
+            }
+            catch (Exception ex)
+            {
+                // Log the exception
+                return StatusCode(500, "Internal server error");
+            }
+        }
+
+
+        [HttpGet]
+        [Authorize(Roles = "salesPerson")]
+        [Route("GetNotificationBySearch/{searchTerm}/{customId}")]
+        public IActionResult GetNotificationBySearch(string searchTerm, int customId)
+        {
+            try
+            {
+                var notifications = _notificationServices.GetNotificationsBySearch(searchTerm, customId);
+                return Ok(notifications);
+            }
+            catch (Exception ex)
+            {
+                // Log the exception
+                return StatusCode(500, "Internal server error");
+            }
+        }
+
+
+
+        [HttpPut]
+        [Authorize(Roles = "salesPerson")]
+        [Route("UpdateReadNotificationStatus/{id}")]
+        public IActionResult UpdateReadNotificationStatus(int id, [FromBody] bool isRead)
+        {
+
+            var updatedNotification = _notificationServices.UpdateReadNotificationStatus(id, isRead);
+            if (updatedNotification == null)
+            {
+                return NotFound();
+            }
+
+            return NoContent();
+        }
+
+        [HttpPut]
+        [Authorize(Roles = "salesPerson")]
+        [Route("UpdateRead-and-NotificationType")]
+        public IActionResult UpdateReadAndNotificationType([FromBody] NotificationDTO notification)
+        {
+            var updatedNotification = _notificationServices.UpdateReadAndNotificationType(notification);
+            if (updatedNotification == null)
+            {
+                return NotFound();
+            }
+
+            return NoContent();
+        }
+
     }
 }

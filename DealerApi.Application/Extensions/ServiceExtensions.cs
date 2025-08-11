@@ -17,10 +17,16 @@ public static class ServiceExtensions
         // Register your application services here
         services.AddDataAccessLayerServices(configuration);
 
+        // DEBUG: Print all configuration key-value pairs
+        Console.WriteLine("==== CONFIGURATION DUMP ====");
+        foreach (var kvp in configuration.AsEnumerable())
+        {
+            Console.WriteLine($"{kvp.Key} = {kvp.Value}");
+        }
+        Console.WriteLine("===========================");
+
         //add jwt token
-        var appSettingsSection = services.BuildServiceProvider()
-            .GetRequiredService<IConfiguration>()
-            .GetSection("AppSettings");
+        var appSettingsSection = configuration.GetSection("AppSettings");
         services.Configure<AppSettings>(appSettingsSection);
         var appSettings = appSettingsSection.Get<AppSettings>();
         if (string.IsNullOrEmpty(appSettings?.Secret))
@@ -55,6 +61,7 @@ public static class ServiceExtensions
         services.AddScoped<INotificationServices, NotificationServices>();
         services.AddScoped<ISalesPersonServices, SalesPersonServices>();
         services.AddScoped<IDealerCarUnitServices, DealerCarUnitServices>();
+        services.AddScoped<IEmailNotificationServices, EmailNotificationServices>();
         // Add other services as needed
 
         // Removed recursive call to AddApplicationServices()

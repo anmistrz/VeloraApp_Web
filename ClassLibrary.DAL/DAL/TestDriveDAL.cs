@@ -86,13 +86,13 @@ namespace DealerApi.DAL.DAL
                 var dtNotification = new Notification
                 {
                     CustomerId = validateCustomer != null ? validateCustomer.CustomerId : dataCustomer.CustomerId,
-                    NotificationType = "TestDrive",
+                    NotificationType = "TestDriveRequest",
                     DealerId = dataDealerCar.DealerId,
                     TestDriveId = dtTestDrive.TestDriveId,
                     Message = $"Test drive scheduled for {dataDealerCar.CarId} on {dtTestDrive.AppointmentDate}",
                     IsRead = false,
                     Priority = 1,
-                    CreatedAt = DateTime.UtcNow
+                    CreatedAt = DateTime.Now
                 };
 
                 _context.Notifications.Add(dtNotification);

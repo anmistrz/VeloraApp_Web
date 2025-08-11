@@ -1,0 +1,160 @@
+
+@model WebPromotion.ViewModels.Modal.ModalConfirmationViewModels
+
+
+<!-- Modal Backdrop -->
+<div class="modal-backdrop fade @(Model.IsVisible ? "show" : "")" id="modalBackdrop" style="display: @(Model.IsVisible ? "block" : "none");"></div>
+
+<!-- Modal -->
+<div class="modal fade @(Model.IsVisible ? "show" : "")" id="myModal" tabindex="-1" aria-labelledby="modalLabel" aria-hidden="@(!Model.IsVisible)" style="display: @(Model.IsVisible ? "block" : "none");">
+    <div class="modal-dialog modal-dialog-centered modal-primary">
+        <div class="modal-content">   
+            <svg 
+            <h4 class="text-primary mt-3">@Model.Title</h4>
+            <p class="mt-3">@Model.Message</p>
+            <div class="modal-footer">
+                <button type="button" class="btn @Model.CancelButtonClass" data-bs-dismiss="modal" onclick="closeModal()">@Model.CancelButtonText</button>
+                <button type="button" class="btn @Model.ConfirmButtonClass" onclick="confirmModal()">@Model.ConfirmButtonText</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script>
+    function showModal() {
+        var modal = document.getElementById('myModal');
+        var backdrop = document.getElementById('modalBackdrop');
+        
+        if (modal && backdrop) {
+            modal.style.display = 'block';
+            backdrop.style.display = 'block';
+            
+            // Add classes with slight delay for animation
+            setTimeout(function() {
+                modal.classList.add('show');
+                backdrop.classList.add('show');
+            }, 10);
+            
+            // Prevent body scroll
+            document.body.style.overflow = 'hidden';
+            document.body.classList.add('modal-open');
+        }
+    }
+    
+    function closeModal() {
+        var modal = document.getElementById('myModal');
+        var backdrop = document.getElementById('modalBackdrop');
+        
+        if (modal && backdrop) {
+            modal.classList.remove('show');
+            backdrop.classList.remove('show');
+            
+            // Hide after animation completes
+            setTimeout(function() {
+                modal.style.display = 'none';
+                backdrop.style.display = 'none';
+            }, 150);
+            
+            // Restore body scroll
+            document.body.style.overflow = '';
+            document.body.classList.remove('modal-open');
+        }
+    }
+
+    // Close modal when clicking backdrop
+    document.addEventListener('click', function (event) {
+        var backdrop = document.getElementById('modalBackdrop');
+        if (event.target === backdrop) {
+            closeModal();
+        }
+    });
+
+    // Close modal with Escape key
+    document.addEventListener('keydown', function(event) {
+        if (event.key === 'Escape') {
+            closeModal();
+        }
+    });
+
+    @if (Model.IsVisible)
+    {
+        <text>
+        // Auto show modal if IsVisible is true
+        document.addEventListener("DOMContentLoaded", function () {
+            showModal();
+        });
+        </text>
+    }
+
+</script>
+
+<style>
+    /* Modal */
+    .modal#myModal .modal-content,
+    .modal#statusErrorsModal .modal-content {
+        border-radius: 30px;
+    }
+    .modal#myModal .modal-content svg,
+    .modal#myModal .modal-content .path {
+        stroke-dasharray: 1000;
+        stroke-dashoffset: 0;
+    }
+    .modal#myModal .modal-content .path.circle,.circle {
+        -webkit-animation: dash 0.9s ease-in-out;
+        animation: dash 0.9s ease-in-out;
+    }
+    .modal#myModal .modal-content .path.line {
+        stroke-dashoffset: 1000;
+        -webkit-animation: dash 0.95s 0.35s ease-in-out forwards;
+        animation: dash 0.95s 0.35s ease-in-out forwards;
+    }
+    .modal#myModal .modal-content .path.check {
+        stroke-dashoffset: -100;
+        -webkit-animation: dash-check 0.95s 0.35s ease-in-out forwards;
+        animation: dash-check 0.95s 0.35s ease-in-out forwards;
+    }
+    
+    @@-webkit-keyframes dash {
+        0% {
+            stroke-dashoffset: 1000;
+        }
+        100% {
+            stroke-dashoffset: 0;
+        }
+    }
+    
+    @@keyframes dash {
+        0% {
+            stroke-dashoffset: 1000;
+        }
+        100% {
+            stroke-dashoffset: 0;
+        }
+    }
+    
+    @@-webkit-keyframes dash-check {
+        0% {
+            stroke-dashoffset: -100;
+        }
+        100% {
+            stroke-dashoffset: 900;
+        }
+    }
+    
+    @@keyframes dash-check {
+        0% {
+            stroke-dashoffset: -100;
+        }
+        100% {
+            stroke-dashoffset: 900;
+        }
+    }
+    
+    .box00 {
+        width: 100px;
+        height: 100px;
+        border-radius: 50%;
+    }
+    /* Modal End */
+</style>

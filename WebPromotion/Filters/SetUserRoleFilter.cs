@@ -19,6 +19,8 @@ namespace WebPromotion.Filters
                 var jwt = handler.ReadJwtToken(token);
                 role = jwt.Claims.FirstOrDefault(c => c.Type == "role" || c.Type == ClaimTypes.Role)?.Value;
                 controller.ViewBag.FullName = jwt.Claims.FirstOrDefault(c => c.Type == "given_name" || c.Type == ClaimTypes.GivenName)?.Value;
+                controller.ViewBag.Email = jwt.Claims.FirstOrDefault(c => c.Type == "email" || c.Type == ClaimTypes.Email)?.Value;
+                controller.ViewBag.DealerId = jwt.Claims.FirstOrDefault(c => c.Type == "DealerId")?.Value;
             }
             if (controller != null)
             {
