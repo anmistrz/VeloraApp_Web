@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("DealerApi.Entities")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+144f63cc1f90d20a718e16c26c9e4a02f7b395f7")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+9a21dee9848a30eeebebfaae35f3f99f315ed4b3")]
 [assembly: System.Reflection.AssemblyProductAttribute("DealerApi.Entities")]
 [assembly: System.Reflection.AssemblyTitleAttribute("DealerApi.Entities")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

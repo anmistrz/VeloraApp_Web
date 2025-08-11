@@ -87,11 +87,11 @@ namespace DealerApi.DAL.DAL
                         CustomerId = dataCustomer.CustomerId,
                         DealerId = dataDealerCar.DealerId,
                         ConsultHistoryId = consultHistory.ConsultHistoryId,
-                        NotificationType = "Request Consultation",
-                        Message = $"New consultation request from {dataCustomer.FirstName} {dataCustomer.LastName} on {consultHistory.ConsultDate.ToShortDateString()} at dealer {dataDealerCar.DealerId}. Contact: {dataCustomer.Email}, {dataCustomer.PhoneNumber}",
+                        NotificationType = "ConsultationRequest",
+                        Message = $"New consultation request from {dataCustomer.FirstName} {dataCustomer.LastName} on {consultHistory.ConsultDate.ToShortDateString()} at dealer {dataDealerCar.DealerId}.",
                         IsRead = false,
                         Priority = 1,
-                        CreatedAt = DateTime.UtcNow
+                        CreatedAt = DateTime.Now
                     };
 
                     _context.Notifications.Add(notification);

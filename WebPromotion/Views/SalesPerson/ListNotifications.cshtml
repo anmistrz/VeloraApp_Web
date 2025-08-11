@@ -1,0 +1,117 @@
+@model IEnumerable<WebPromotion.Services.DTO.NotificationDTO>
+@{
+    ViewData["Title"] = "ListNotifications";
+}
+
+<div
+    class="d-flex align-items-left align-items-center flex-column flex-md-row pt-2 pb-4"
+>
+    <div class="gap-2">
+        <h3 class="fw-bold mb-3">List Notifications</h3>
+        <div class="d-flex gap-2">
+            <form method="get" action="@Url.Action("ListNotifications", "SalesPerson")" class="d-flex gap-2">
+                <input
+                    type="text"
+                    placeholder="Search ..."
+                    class="form-control"
+                    name="search"
+                    value="@ViewBag.SearchTerm"
+                />
+                <button type="submit" class="btn btn-search pe-1 d-flex gap-2 align-items-center">
+                    <i class="fa fa-search search-icon"></i>
+                    Search
+                </button>
+            </form>
+        </div>
+    </div>
+    <div class="ms-md-auto py-2 py-md-0">
+        <a href="@Url.Action("Index", "SalesPerson")" class="btn btn-label-info btn-round">
+            <i class="fas fa-arrow-left"></i> Back to Menu
+        </a>
+    </div>
+</div>
+
+<div class="row  pt-2 pb-4">
+    <div class="col-md-6"></div>
+        @foreach (var notification in Model)
+        {
+            <div class="card">
+                <div class="card-header">
+                    <h4 class="card-title">@notification.NotificationType</h4>
+                </div>
+                <div class="card-body">
+                    <div class="mt-2 mb-3">
+                        <p class="text-muted">
+                            <strong>Message:</strong> @notification.Message
+                        </p>
+                    </div>
+                </div>
+                <div class="card-footer">
+                    <div class="d-flex justify-content-between">
+                        <div class="d-flex align-items-center gap-2">
+                            <small class="text-muted">Created on: @notification.CreatedAt.ToString("MMMM dd, yyyy")</small>
+                            @if(notification.IsRead)
+                            {
+                                <small class="text-muted text-success"> "Read"</small>
+                            }
+                            else
+                            {
+                                <small class="text-muted text-danger"> "Unread"</small>
+                            }
+                        </div>
+                        @if(notification.NotificationType == "ConsultationRequest" || notification.NotificationType == "TestDriveRequest")
+                        {
+                            <form method="post" action="@Url.Action("HandleNotification", "SalesPerson")" class="handle-form">
+                                <input type="hidden" name="NotificationId" value="@notification.NotificationId" />
+                                <input type="hidden" name="NotificationType" value="@notification.NotificationType" />
+                                <input type="hidden" name="IsRead" value="@notification.IsRead" />
+                                <input type="hidden" name="Message" value="@notification.Message" />
+                                <button type="button" class="btn btn-primary btn-round btn-handle-request" data-id="@notification.NotificationId">Handle Request</button>
+                            </form>
+                        }
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+
+<!-- Modal Konfirmasi (bisa juga pakai ViewComponent jika ingin dinamis) -->
+<div class="modal fade" id="modalConfirmation" tabindex="-1" aria-labelledby="modalConfirmationLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalConfirmationLabel">Konfirmasi</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                Anda yakin ingin memproses request ini?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                <button type="button" class="btn btn-primary" id="btn-confirm-yes">Ya</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+<script>
+        let formToSubmit = null;
+        document.querySelectorAll('.btn-handle-request').forEach(btn => {
+                btn.addEventListener('click', function(e) {
+                        formToSubmit = this.closest('form');
+                        var modal = new bootstrap.Modal(document.getElementById('modalConfirmation'));
+                        modal.show();
+                });
+        });
+        document.getElementById('btn-confirm-yes').addEventListener('click', function() {
+                if (formToSubmit) {
+                        formToSubmit.submit();
+                }
+                var modal = bootstrap.Modal.getInstance(document.getElementById('modalConfirmation'));
+                modal.hide();
+        });
+</script>
+}

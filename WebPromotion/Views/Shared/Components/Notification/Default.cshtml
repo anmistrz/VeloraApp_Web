@@ -1,0 +1,67 @@
+@using WebPromotion.Services.DTO;
+@model IEnumerable<NotificationDTO>
+
+
+<li class="nav-item topbar-icon dropdown hidden-caret">
+    <a
+    class="nav-link dropdown-toggle"
+    href="#"
+    id="notifDropdown"
+    role="button"
+    data-bs-toggle="dropdown"
+    aria-haspopup="true"
+    aria-expanded="false"
+    >
+    <i class="fa fa-bell"></i>
+    <span class="notification">
+        @if (Model != null && Model.Any())
+        {
+            <span class="count">@Model.Count()</span>
+        }
+        else
+        {
+            <span class="count">0</span>
+        }
+    </a>
+    <ul
+    class="dropdown-menu notif-box animated fadeIn"
+    aria-labelledby="notifDropdown"
+    >
+    <li>
+        <div class="dropdown-title">
+        You have <span class="count">@Model.Count()</span> new notifications
+        </div>
+    </li>
+    <li>
+        <div class="notif-scroll scrollbar-outer">
+        <div class="notif-center col-12">
+            @foreach(var notif in Model)
+            {
+                {Console.WriteLine($"Rendering notification: {notif.NotificationType} at {notif.CreatedAt}");}
+                <a href="@Url.Action("DetailNotifications", "SalesPerson", new { id = notif.NotificationId })">
+                    <div class="notif-icon notif-primary col-6">
+                        @if(notif.NotificationType == "ConsultationRequest")
+                        {
+                        <i class="fas fa-calendar-check"></i>
+                        }
+                        else if(notif.NotificationType == "TestDriveRequest")
+                        {
+                        <i class="fas fa-car"></i>
+                        }
+                    </div>
+                    <div class="notif-content col-6">
+                        <span class="block"> @notif.Message </span>
+                        <span class="time"> @notif.CreatedAt.ToString("g") </span>
+                    </div>
+                </a>
+            }
+        </div>
+        </div>
+    </li>
+    <li>
+        <a class="see-all" href="@Url.Action("ListNotifications", "SalesPerson")">
+            <i class="fa fa-bell"></i> See all notifications <i class="fa fa-angle-right"></i>
+        </a>
+    </li>
+    </ul>
+</li>
