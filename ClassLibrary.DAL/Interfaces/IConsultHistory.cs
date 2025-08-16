@@ -11,5 +11,9 @@ namespace DealerApi.DAL.Interfaces
     public interface IConsultHistory : ICrud<ConsultHistory>
     {
         public Task<ConsultHistory> CreateConsultHistoryGuestAsync(Customer dataCustomer, ConsultHistory consultHistory, DealerCar dataDealerCar);
+        public Task<IEnumerable<(ConsultHistory, Customer, Car)>> GetConsultHistoryBySalesPersonIdAsync(int salesPersonId);
+        public Task<IEnumerable<ConsultHistory>> GetAllConsultHistoryAsync();
+        public Task<bool> DeleteConsultHistoryAfterHandledAsync(int consultHistoryId, string reason);
+        public Task<bool> DeleteConsultHistoryBeforeHandledAsync(int consultHistoryId, int salesPersonId, int dealerId, string reason);
     }
 }

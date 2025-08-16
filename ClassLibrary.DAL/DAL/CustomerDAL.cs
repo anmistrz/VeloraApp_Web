@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using DealerApi.DAL.Context;
 using DealerApi.DAL.Interfaces;
 using DealerApi.Entities.Models;
 
@@ -9,7 +10,14 @@ namespace ClassLibrary.DAL
 {
     public class CustomerDAL : ICustomer
     {
-        public Task<Customer> CreateAsync(Customer entity)
+        private readonly DealerRndDBContext _context;
+
+        public CustomerDAL(DealerRndDBContext context)
+        {
+            _context = context;
+        }
+
+        public async Task<Customer> CreateAsync(Customer entity)
         {
             throw new NotImplementedException();
         }
@@ -24,9 +32,17 @@ namespace ClassLibrary.DAL
             throw new NotImplementedException();
         }
 
-        public Task<Customer> GetByIdAsync(int id)
+        public async Task<Customer> GetByIdAsync(int id)
         {
-            throw new NotImplementedException();
+            try
+            {
+                return await _context.Customers.FindAsync(id);
+            }
+            catch (Exception ex)
+            {
+                // Handle exceptions as needed
+                throw new Exception("Error retrieving customer by ID", ex);
+            }
         }
 
         public Task<IEnumerable<Customer>> GetBySearchAsync(string searchTerm)

@@ -11,5 +11,9 @@ namespace DealerApi.DAL.Interfaces
             DealerCar dataDealerCar
         );
 
+        public Task<IEnumerable<(TestDrive, Customer, Car)>> GetTestDrivesBySalesPersonIdAsync(int salesPersonId);
+        public Task<bool> DeleteTestDriveAfterHandledAsync(int testDriveId, string reason);
+        public Task<bool> DeleteTestDriveBeforeHandledAsync(int testDriveId, int salesPersonId, int dealerId, string reason);
+
     }
 }

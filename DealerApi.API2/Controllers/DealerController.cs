@@ -9,11 +9,11 @@ namespace DealerApi.API.Controllers
     [ApiController]
     public class DealerController : ControllerBase
     {
-        private readonly IDealerService _dealerService;
+        private readonly IDealerBL _dealerBL;
 
-        public DealerController(IDealerService dealerService)
+        public DealerController(IDealerBL dealerBL)
         {
-            _dealerService = dealerService;
+            _dealerBL = dealerBL;
         }
 
         [HttpGet]
@@ -22,7 +22,7 @@ namespace DealerApi.API.Controllers
         {
             try
             {
-                var carOptions = await _dealerService.GetDealerOptions();
+                var carOptions = await _dealerBL.GetDealerOptions();
                 return Ok(carOptions);
             }
             catch (Exception ex)

@@ -1,6 +1,7 @@
 using DealerApi.Application.DTO;
 using DealerApi.Application.Interface;
 using DealerApi.Entities.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -10,11 +11,11 @@ namespace DealerApi.API.Controllers
     [ApiController]
     public class ConsultHistoryController : ControllerBase
     {
-        private readonly IConsultHistoryServices _consultHistoryServices;
+        private readonly IConsultHistoryBL _consultHistoryBL;
 
-        public ConsultHistoryController(IConsultHistoryServices consultHistoryServices)
+        public ConsultHistoryController(IConsultHistoryBL consultHistoryBL)
         {
-            _consultHistoryServices = consultHistoryServices ?? throw new ArgumentNullException(nameof(consultHistoryServices));
+            _consultHistoryBL = consultHistoryBL;
         }
 
         [HttpPost("create-guest")]
@@ -62,12 +63,82 @@ namespace DealerApi.API.Controllers
                     CarId = consultHistoryGuestDto.DealerCarUnitId // Assuming DealerCarUnitId maps to CarId
                 };
 
-                var result = await _consultHistoryServices.CreateAsyncConsultHistoryGuest(
-                    dtCustomer, 
-                    dtConsultHistory, 
+                var result = await _consultHistoryBL.CreateAsyncConsultHistoryGuest(
+                    dtCustomer,
+                    dtConsultHistory,
                     dtDealerCar
                 );
                 return CreatedAtAction(nameof(CreateConsultHistoryGuest), new { id = result.Id }, result);
+            }
+            catch (Exception ex)
+            {
+                // Log the exception as needed
+                return StatusCode(StatusCodes.Status500InternalServerError, new { error = "Internal server error", message = ex.Message });
+            }
+        }
+
+        [HttpGet("salesperson/{salesPersonId}")]
+        [Authorize(Roles = "salesPerson")]
+        public async Task<IActionResult> GetConsultHistoryBySalesPersonId(int salesPersonId)
+        {
+            try
+            {
+                var result = await _consultHistoryBL.GetConsultHistoryBySalesPersonIdAsync(salesPersonId);
+                if (result == null || !result.Any())
+                {
+                    return NotFound(new { error = "No consult history found for the specified sales person" });
+                }
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                // Log the exception as needed
+                return StatusCode(StatusCodes.Status500InternalServerError, new { error = "Internal server error", message = ex.Message });
+            }
+        }
+
+        [HttpPost("delete-after-handled/{id}")]
+        // [Authorize(Roles = "salesPerson")]
+        public async Task<IActionResult> DeleteConsultHistoryAfterHandled(int id, [FromBody] DeleteConsultRequestDTO deleteRequest)
+        {
+            try
+            {
+                if (deleteRequest == null)
+                {
+                    return BadRequest(new { error = "Request body cannot be null or empty" });
+                }
+
+                var result = await _consultHistoryBL.DeleteConsultHistoryAfterHandledAsync(id, deleteRequest);
+                if (!result)
+                {
+                    return NotFound(new { error = "Consult history not found or could not be deleted" });
+                }
+                return NoContent();
+            }
+            catch (Exception ex)
+            {
+                // Log the exception as needed
+                return StatusCode(StatusCodes.Status500InternalServerError, new { error = "Internal server error", message = ex.Message });
+            }
+        }
+
+        [HttpDelete("delete-before-handled/{id}")]
+        [Authorize(Roles = "salesPerson")]
+        public async Task<IActionResult> DeleteConsultHistoryBeforeHandled(int id, [FromBody] DeleteConsultRequestDTO deleteRequest)
+        {
+            try
+            {
+                if (deleteRequest == null)
+                {
+                    return BadRequest(new { error = "Request body cannot be null or empty" });
+                }
+
+                var result = await _consultHistoryBL.DeleteConsultHistoryBeforeHandledAsync(id, deleteRequest);
+                if (!result)
+                {
+                    return NotFound(new { error = "Consult history not found or could not be deleted" });
+                }
+                return NoContent();
             }
             catch (Exception ex)
             {

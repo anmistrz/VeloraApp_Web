@@ -9,11 +9,11 @@ namespace DealerApi.API
     [ApiController]
     public class UserAuthController : ControllerBase
     {
-        private readonly IUserAuthServices _userAuthServices;
+        private readonly IUserAuthBL _userAuthBL;
 
-        public UserAuthController(IUserAuthServices userAuthServices)
+        public UserAuthController(IUserAuthBL userAuthBL)
         {
-            _userAuthServices = userAuthServices ?? throw new ArgumentNullException(nameof(userAuthServices));
+            _userAuthBL = userAuthBL;
         }
 
         [HttpPost("login")]
@@ -37,7 +37,7 @@ namespace DealerApi.API
 
             try
             {
-                var result = await _userAuthServices.LoginAsync(userLoginDto);
+                var result = await _userAuthBL.LoginAsync(userLoginDto);
                 if (result == null)
                 {
                     return Unauthorized(new { error = "Invalid credentials" });
@@ -72,7 +72,7 @@ namespace DealerApi.API
 
             try
             {
-                var result = await _userAuthServices.RegisterAsync(userRegisterDto);
+                var result = await _userAuthBL.RegisterAsync(userRegisterDto);
                 if (!result)
                 {
                     return BadRequest(new { error = "Registration failed" });
@@ -103,7 +103,7 @@ namespace DealerApi.API
             try
             {
                 var roleDto = new RoleCreateDTO { RoleName = roleName };
-                var result = await _userAuthServices.CreateRoleAsync(roleDto);
+                var result = await _userAuthBL.CreateRoleAsync(roleDto);
                 if (!result)
                 {
                     return BadRequest(new { error = "Role creation failed" });
@@ -126,7 +126,7 @@ namespace DealerApi.API
 
             try
             {
-                var result = await _userAuthServices.AddUserToRoleAsync(roleInsertDto.Email, roleInsertDto.RoleName);
+                var result = await _userAuthBL.AddUserToRoleAsync(roleInsertDto.Email, roleInsertDto.RoleName);
                 if (!result)
                 {
                     return BadRequest(new { error = "Failed to add user to role" });
@@ -149,7 +149,7 @@ namespace DealerApi.API
 
             try
             {
-                var roles = await _userAuthServices.GetRolesByUserAsync(email);
+                var roles = await _userAuthBL.GetRolesByUserAsync(email);
                 if (roles == null || !roles.Any())
                 {
                     return NotFound(new { error = "No roles found for the user" });

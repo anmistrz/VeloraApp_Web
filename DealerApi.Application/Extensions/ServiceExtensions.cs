@@ -1,5 +1,5 @@
 using DealerApi.Application.Interface;
-using DealerApi.Application.Services;
+using DealerApi.Application.BusinessLogic;
 using DealerApi.DAL.Extension;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -17,13 +17,13 @@ public static class ServiceExtensions
         // Register your application services here
         services.AddDataAccessLayerServices(configuration);
 
-        // DEBUG: Print all configuration key-value pairs
-        Console.WriteLine("==== CONFIGURATION DUMP ====");
-        foreach (var kvp in configuration.AsEnumerable())
-        {
-            Console.WriteLine($"{kvp.Key} = {kvp.Value}");
-        }
-        Console.WriteLine("===========================");
+        // // DEBUG: Print all configuration key-value pairs
+        // Console.WriteLine("==== CONFIGURATION DUMP ====");
+        // foreach (var kvp in configuration.AsEnumerable())
+        // {
+        //     Console.WriteLine($"{kvp.Key} = {kvp.Value}");
+        // }
+        // Console.WriteLine("===========================");
 
         //add jwt token
         var appSettingsSection = configuration.GetSection("AppSettings");
@@ -52,16 +52,17 @@ public static class ServiceExtensions
             };
         });
 
-        services.AddScoped<ICarServices, CarServices>();
-        services.AddScoped<IDealerService, DealerServices>();
-        services.AddScoped<IDealerCarServices, DealerCarServices>();
-        services.AddScoped<IConsultHistoryServices, ConsultHistoryServices>();
-        services.AddScoped<ITestDriveServices, TestDriveServices>();
-        services.AddScoped<IUserAuthServices, UserAuthServices>();
-        services.AddScoped<INotificationServices, NotificationServices>();
-        services.AddScoped<ISalesPersonServices, SalesPersonServices>();
-        services.AddScoped<IDealerCarUnitServices, DealerCarUnitServices>();
-        services.AddScoped<IEmailNotificationServices, EmailNotificationServices>();
+        services.AddScoped<ICarBL, CarBL>();
+        services.AddScoped<IDealerBL, DealerBL>();
+        services.AddScoped<IDealerCarBL, DealerCarBL>();
+        services.AddScoped<IConsultHistoryBL, ConsultHistoryBL>();
+        services.AddScoped<ITestDriveBL, TestDriveBL>();
+        services.AddScoped<IUserAuthBL, UserAuthBL>();
+        services.AddScoped<INotificationBL, NotificationBL>();
+        services.AddScoped<ISalesPersonBL, SalesPersonBL>();
+        services.AddScoped<IDealerCarUnitBL, DealerCarUnitBL>();
+        services.AddScoped<IEmailNotificationBL, EmailNotificationBL>();
+        services.AddScoped<ISalesActivityLogBL, SalesActivityBL>();
         // Add other services as needed
 
         // Removed recursive call to AddApplicationServices()

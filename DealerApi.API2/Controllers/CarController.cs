@@ -8,10 +8,10 @@ namespace DealerApi.API.Controllers
     public class CarController : ControllerBase
     {
 
-        private readonly ICarServices _carServices;
-        public CarController(ICarServices carServices)
+        private readonly ICarBL _carBL;
+        public CarController(ICarBL carBL)
         {
-            _carServices = carServices ?? throw new ArgumentNullException(nameof(carServices));
+            _carBL = carBL;
         }
 
 
@@ -22,7 +22,7 @@ namespace DealerApi.API.Controllers
         {
             try
             {
-                var carOptions = await _carServices.GetCarOptions();
+                var carOptions = await _carBL.GetCarOptions();
                 return Ok(carOptions);
             }
             catch (Exception ex)

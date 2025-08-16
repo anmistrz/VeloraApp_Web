@@ -42,6 +42,7 @@ namespace DealerApi.DAL.Extension
             services.AddScoped<ISalesPerson, SalesPersonDAL>();
             services.AddScoped<IDealerCarUnit, DealerCarUnitDAL>();
             services.AddScoped<IEmailNotification, EmailNotificationDAL>();
+            services.AddScoped<ISalesActivityLog, SalesActivityDAL>();
             // Add other services as needed
 
             return services;

@@ -28,7 +28,6 @@ public class CarDAL : ICar
     {
         try
         {
-            Console.WriteLine("Masukkkkkk");
             return await _context.Cars.ToListAsync();
         }
         catch (Exception ex)
@@ -38,9 +37,17 @@ public class CarDAL : ICar
         }
     }
 
-    public Task<Car> GetByIdAsync(int id)
+    public async Task<Car> GetByIdAsync(int id)
     {
-        throw new NotImplementedException();
+        try
+        {
+            return await _context.Cars.FindAsync(id);
+        }
+        catch (Exception ex)
+        {
+            // Handle exceptions as needed
+            throw new Exception("Error retrieving car by ID", ex);
+        }
     }
 
     public Task<Car> UpdateAsync(Car entity)
