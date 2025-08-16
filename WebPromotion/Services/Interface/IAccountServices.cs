@@ -10,5 +10,6 @@ namespace WebPromotion.Services.Interface
     public interface IAccountServices
     {
         Task<UserViewModel> LoginAsync(LoginDTO model);
+        Task<string> LogoutAsync();
     }
 }

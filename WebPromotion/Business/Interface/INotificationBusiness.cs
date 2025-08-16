@@ -14,12 +14,12 @@ namespace WebPromotion.Business.Interface
         // public Task<List<NotificationDTO>> GetUnreadNotificationsClient(int customId);
         // public Task<List<NotificationDTO>> GetNotificationsBySearchClient(string searchTerm, int customId);
 
-        public Task<NotificationDTO> GetNotificationById(int id);
+        public Task<NotificationDTO> GetNotificationById(int id, string NotificationType);
         public Task<List<NotificationDTO>> GetLimitNotification(int limit, int customId);
         public Task<NotificationDTO> UpdateReadNotificationStatus(int id, bool isRead);
         public Task<List<NotificationDTO>> GetNotificationBySearchBussiness(string searchTerm, int customId);
         public Task<List<NotificationDTO>> GetUnreadNotificationsBusiness(int customId);
-        public Task<NotificationDTO> UpdateReadAndNotificationTypeBusiness(NotificationDTO notification);
+        public Task<NotificationDTO> UpdateReadAndNotificationTypeBusiness(NotificationDTO notification, int salesPerson);
         public Task<NotificationDTO> UpdateReadNotificationBusiness(int id, bool isRead);
         public Task<List<NotificationDTO>> UpdateReadAllNotifications(bool isRead);
         

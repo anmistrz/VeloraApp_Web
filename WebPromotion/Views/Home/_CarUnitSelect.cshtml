@@ -1,0 +1,8 @@
+@model IEnumerable<Microsoft.AspNetCore.Mvc.Rendering.SelectListItem>
+<select name="DealerCarUnitId" id="DealerCarUnitId" class="form-select">
+    <option value="">Select Car Unit</option>
+    @foreach (var item in Model)
+    {
+        <option value="@item.Value">@item.Text</option>
+    }
+</select>

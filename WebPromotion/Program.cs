@@ -22,18 +22,6 @@ builder.Services.AddControllersWithViews(options =>
     options.Filters.Add<WebPromotion.Filters.SetUserRoleFilter>();
 });
 
-// Configure Auth
-builder.Services.AddAuthentication(defaultScheme: IdentityConstants.ApplicationScheme);
-    // .AddIdentityCookies();
-
-// Add Identity Core services
-builder.Services.AddIdentityCore<IdentityUser>(options => {
-    options.Password.RequireDigit = false;
-    options.Password.RequiredLength = 6;
-    options.Password.RequireLowercase = false;
-    options.Password.RequireNonAlphanumeric = false;
-    options.Password.RequireUppercase = false;
-});
 
 // Register DAL and Application services
 builder.Services.AddDataAccessLayerServices(builder.Configuration);
@@ -50,11 +38,13 @@ builder.Services.AddHttpClient<IDealerCarServices, DealerCarServices>();
 builder.Services.AddHttpClient<IConsultationServices, ConsultationServices>(client =>
 {
     client.BaseAddress = new Uri(builder.Configuration["ApiBaseUrl"]);
-});
+}).AddHttpMessageHandler<BearerTokenHandler>();
+
 builder.Services.AddHttpClient<ITestDriveService, TestDriveServices>(client =>
 {
     client.BaseAddress = new Uri(builder.Configuration["ApiBaseUrl"]);
-});
+}).AddHttpMessageHandler<BearerTokenHandler>();
+
 builder.Services.AddHttpClient<IAccountServices, AccountService>(client =>
 {
     client.BaseAddress = new Uri(builder.Configuration["ApiBaseUrl"]);
@@ -64,16 +54,16 @@ builder.Services.AddHttpContextAccessor();
 builder.Services.AddTransient<BearerTokenHandler>();
 builder.Services.AddHttpClient<INotificationServices, NotificationServices>()
     .AddHttpMessageHandler<BearerTokenHandler>();
-
+builder.Services.AddHttpClient<ISalesActivityService, SalesActivityServices>()
+    .AddHttpMessageHandler<BearerTokenHandler>();
 
 builder.Services.AddScoped<IDealerCarBusiness, DealerCarbusiness>();
 builder.Services.AddScoped<IConsultationBusiness, ConsultationBusiness>();
 builder.Services.AddScoped<ITestDriveBusiness, TestDriveBusiness>();
 builder.Services.AddScoped<IAccountBusiness, AccountBusiness>();
-builder.Services.AddScoped<INotificationBusiness, NotificationBusiness>();  
+builder.Services.AddScoped<INotificationBusiness, NotificationBusiness>();
+builder.Services.AddScoped<ISalesActivityBusiness, SalesActivityBusiness>();
 
-// Register MVC services
-builder.Services.AddScoped<IConsultationServices, ConsultationServices>();
 
 builder.Services.AddApplicationServices(builder.Configuration);
 

@@ -30,4 +30,5 @@ public partial class TestDrive
     public virtual ICollection<Notification> Notifications { get; set; } = new List<Notification>();
 
     public virtual SalesPerson SalesPerson { get; set; }
+    public virtual ICollection<SalesActivityLog> SalesActivityLogs { get; set; } = new List<SalesActivityLog>();
 }

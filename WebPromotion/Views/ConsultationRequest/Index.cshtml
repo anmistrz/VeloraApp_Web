@@ -1,0 +1,262 @@
+@* @model WebPromotion.Views.SalesPerson.ConsultationRequest *@
+@{
+    ViewData["Title"] = "ConsultationRequest";
+}
+
+<div class="container">
+    <div class="page-inner">
+        <div class="page-header">
+            <h3 class="fw-bold mb-3">Consultation Request</h3>
+            <ul class="breadcrumbs mb-2">
+                <li class="nav-home">
+                    <a href="@Url.Action("Index", "SalesPerson")">
+                    <i class="icon-home"></i>
+                    </a>
+                </li>
+                <li class="separator">
+                    <i class="icon-arrow-right"></i>
+                </li>
+                <li class="nav-item">
+                    <a href="#">List Request</a>
+                </li>
+                <li class="separator">
+                    <i class="icon-arrow-right"></i>
+                </li>
+                <li class="nav-item">
+                    <a href="#">Consultation Request</a>
+                </li>
+            </ul>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-body">
+                    <div class="table-responsive">
+                        <table
+                        id="basic-datatables"
+                        class="display table "
+                        >
+                            <thead>
+                                <tr>
+                                    <th>Customer Name</th>
+                                    <th>Car Name</th>
+                                    <th>Budget</th>
+                                    <th>Consultation Date</th>
+                                    <th>Note</th>
+                                    <th>Status</th>
+                                    <th>Options</th>
+                                </tr>
+                            </thead>
+                                <tbody>
+                                @if (Model != null)
+                                {
+                                    @foreach (var item in Model)
+                                    {
+                                        <tr key="@item.ConsultHistoryId">
+                                            <td>@item.CustomerName</td>
+                                            <td>@item.CarName</td>
+                                            <td>@item.Budget</td>
+                                            <td>@item.ConsultDate.ToString("g")</td>
+                                            <td>@item.Note</td>
+                                            <td>
+                                                @if (item.StatusConsultation == "Pending")
+                                                {
+                                                    <span class="border border-warning text-warning rounded-pill fw-bold py-2 px-2">@item.StatusConsultation</span>
+                                                }
+                                                else if (item.StatusConsultation == "Completed")
+                                                {
+                                                    <span class="border border-success text-success rounded-pill fw-bold py-2 px-2">@item.StatusConsultation</span>
+                                                }
+                                                else if (item.StatusConsultation == "Canceled")
+                                                {
+                                                    <span class="border border-danger text-danger rounded-pill fw-bold py-2 px-2">@item.StatusConsultation</span>
+                                                }
+                                                else
+                                                {
+                                                    <span class="border border-secondary text-secondary rounded-pill fw-bold  py-2 px-2">@item.StatusConsultation</span>
+                                                }
+                                            </td>
+                                            <td>
+                                                @if(item.StatusConsultation == "Scheduled")
+                                                {
+                                                    <form action="/SalesPerson/ConsultationRequest/delete-after-handled" method="post" class="delete-request-form">
+                                                        <input type="hidden" name="id" value="@item.ConsultHistoryId" />
+                                                        <input type="hidden" name="Reason" class="reason-input" value="" />
+                                                        <button 
+                                                            type="submit" 
+                                                            class="btn btn-danger btn-sm btn-round btn-handle-request"
+                                                        >
+                                                            Delete Request
+                                                        </button>
+                                                    </form>
+                                                }
+                                                else if (item.StatusConsultation == "Completed")
+                                                {
+                                                    <a 
+                                                        type="button" 
+                                                        href="@Url.Action("Detail", "ConsultationRequest", new { id = item.ConsultHistoryId })" 
+                                                        class="btn btn-primary btn-sm btn-round "
+                                                    >
+                                                        Details Activity
+                                                    </a>
+                                                }  else if (item.StatusConsultation == "Canceled")
+                                                {
+                                                    <a 
+                                                        type="button" 
+                                                        href="@Url.Action("Detail", "ConsultationRequest", new { id = item.ConsultHistoryId })" 
+                                                        class="btn btn-primary btn-sm btn-round "
+                                                    >
+                                                        Details Activity
+                                                    </a>
+                                                } else
+                                                {
+                                                    <span class="text-muted">No Action Available</span>
+                                                }
+                                            </td>
+                                        </tr>
+                                    }
+                                }
+                                else
+                                {
+                                    <tr>
+                                        <td colspan="7" class="text-center">No consultation requests found.</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- Modal Konfirmasi (bisa juga pakai ViewComponent jika ingin dinamis) -->
+<div class="modal fade" id="modalConfirmation" tabindex="-1" aria-labelledby="modalConfirmationLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalConfirmationLabel">Konfirmasi</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <textarea class="form-control" id="Reason" rows="3" placeholder="Alasan penghapusan..."></textarea>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                <button type="button" class="btn btn-primary" id="btn-confirm-yes">Ya</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@* Success Modal *@
+@if (ViewBag.SuccessModal != null)
+{
+    @await Component.InvokeAsync("ModalComponent", ViewBag.SuccessModal)
+}
+
+@* Error Modal *@
+@if (ViewBag.ErrorModal != null)
+{
+    @await Component.InvokeAsync("ModalComponent", ViewBag.ErrorModal)
+}
+
+@section Scripts {
+<script>
+    let formToSubmit = null;
+    document.querySelectorAll('.btn-handle-request').forEach(btn => {
+        btn.addEventListener('click', function(e) {
+            e.preventDefault(); // Prevent default form submission
+            formToSubmit = this.closest('form');
+            var modal = new bootstrap.Modal(document.getElementById('modalConfirmation'));
+            modal.show();
+        });
+    });
+    document.getElementById('btn-confirm-yes').addEventListener('click', function() {
+        if (formToSubmit) {
+            // Set the value of the hidden Reason input in the form
+            var reasonValue = document.getElementById('Reason').value;
+            var reasonInput = formToSubmit.querySelector('.reason-input');
+            if (reasonInput) {
+                reasonInput.value = reasonValue;
+            }
+            formToSubmit.submit();
+        }
+        var modal = bootstrap.Modal.getInstance(document.getElementById('modalConfirmation'));
+        modal.hide();
+    });
+</script>
+}
+
+
+<!--   Core JS Files   -->
+<script src="~/assets/js/core/jquery-3.7.1.min.js"></script>
+
+<!-- jQuery Scrollbar -->
+<script src="~/assets/js/plugin/jquery-scrollbar/jquery.scrollbar.min.js"></script>
+<!-- Datatables -->
+<script src="~/assets/js/plugin/datatables/datatables.min.js"></script>
+<!-- Kaiadmin JS -->
+<script src="~/assets/js/kaiadmin.min.js"></script>
+<!-- Kaiadmin DEMO methods, don't include it in your project! -->
+<script src="~/assets/js/setting-demo2.js"></script>
+<script>
+    $(document).ready(function () {
+    $("#basic-datatables").DataTable({});
+
+    @* $("#multi-filter-select").DataTable({
+        pageLength: 5,
+        initComplete: function () {
+        this.api()
+            .columns()
+            .every(function () {
+            var column = this;
+            var select = $(
+                '<select class="form-select"><option value=""></option></select>'
+            )
+                .appendTo($(column.header()).empty())
+                .on("change", function () {
+                var val = $.fn.dataTable.util.escapeRegex($(this).val());
+
+                column
+                    .search(val ? "^" + val + "$" : "", true, false)
+                    .draw();
+                });
+
+            column
+                .data()
+                .unique()
+                .sort()
+                .each(function (d, j) {
+                select.append(
+                    '<option value="' + d + '">' + d + "</option>"
+                );
+                });
+            });
+        },
+    }); *@
+
+    // Add Row
+    $("#add-row").DataTable({
+        pageLength: 5,
+    });
+
+    var action =
+        '<td> <div class="form-button-action"> <button type="button" data-bs-toggle="tooltip" title="" class="btn btn-link btn-primary btn-lg" data-original-title="Edit Task"> <i class="fa fa-edit"></i> </button> <button type="button" data-bs-toggle="tooltip" title="" class="btn btn-link btn-danger" data-original-title="Remove"> <i class="fa fa-times"></i> </button> </div> </td>';
+
+    $("#addRowButton").click(function () {
+        $("#add-row")
+        .dataTable()
+        .fnAddData([
+            $("#addName").val(),
+            $("#addPosition").val(),
+            $("#addOffice").val(),
+            action,
+        ]);
+        $("#addRowModal").modal("hide");
+    });
+    });
+</script>

@@ -58,5 +58,27 @@ namespace WebPromotion.Services
                 throw new Exception("Login failed", ex);
             }
         }
+
+        public async Task<string> LogoutAsync()
+        {
+            try
+            {
+                var response = await _httpClient.PostAsync("userAuth/logout", null);
+                if (response.IsSuccessStatusCode)
+                {
+                    return "Logout successful";
+                }
+                else
+                {
+                    var errorContent = await response.Content.ReadAsStringAsync();
+                    throw new Exception($"Logout failed: {errorContent}");
+                }
+            }
+            catch (Exception ex)
+            {
+                // Log the exception (not implemented here)
+                throw new Exception("Logout failed", ex);
+            }
+        }
     }
 }

@@ -21,6 +21,7 @@ namespace WebPromotion.Filters
                 controller.ViewBag.FullName = jwt.Claims.FirstOrDefault(c => c.Type == "given_name" || c.Type == ClaimTypes.GivenName)?.Value;
                 controller.ViewBag.Email = jwt.Claims.FirstOrDefault(c => c.Type == "email" || c.Type == ClaimTypes.Email)?.Value;
                 controller.ViewBag.DealerId = jwt.Claims.FirstOrDefault(c => c.Type == "DealerId")?.Value;
+                controller.ViewBag.SalesPersonId = jwt.Claims.FirstOrDefault(c => c.Type == "SalesPersonId")?.Value;
             }
             if (controller != null)
             {

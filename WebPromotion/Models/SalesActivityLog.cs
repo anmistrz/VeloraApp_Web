@@ -15,6 +15,10 @@ public partial class SalesActivityLog
 
     public int SalesPersonId { get; set; }
 
+    public int? ConsultationId { get; set; }
+    
+    public int? TestDriveId { get; set; }
+
     public string ActivityType { get; set; }
 
     public int? NotificationId { get; set; }
@@ -30,4 +34,8 @@ public partial class SalesActivityLog
     public virtual Notification Notification { get; set; }
 
     public virtual SalesPerson SalesPerson { get; set; }
+
+    public virtual ConsultHistory ConsultHistory { get; set; }
+
+    public virtual TestDrive TestDrive { get; set; }
 }

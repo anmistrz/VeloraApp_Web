@@ -815,7 +815,7 @@
                         <input asp-for="Budget" type="text" class="form-control" id="budget">
                     </div>
                     <div class="mb-3">
-                        <label for="recipient-name" class="col-form-label">Fill Your Phone Number</label>
+                        <label for="recipient-name" class="col-form-label">Fill Your Consultation Date</label>
                         <input asp-for="ConsultDate" type="date" class="form-control" id="consult-date">
                     </div>
                     <div class="mb-3">
@@ -878,6 +878,10 @@
                             <input asp-for="PhoneNumber" type="text" class="form-control" id="customer-phone">
                         </div>
                         <div class="mb-3">
+                            <label for="appointment-date" class="col-form-label">Fill Your Test Drive Date</label>
+                            <input asp-for="ConsultDate" type="date" class="form-control" id="appointment-date">
+                        </div>
+                        <div class="mb-3">
                             <label for="recipient-name" class="col-form-label">Note</label>
                             <textarea asp-for="Note" class="form-control" id="customer-note"></textarea>
                         </div>
@@ -906,3 +910,5 @@
     }
 
 </div>
+
+<script src="/_framework/aspnetcore-browser-refresh.js"></script>

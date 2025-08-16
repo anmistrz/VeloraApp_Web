@@ -10,7 +10,7 @@
     <h3 class="fw-bold mb-3">Detail Notification</h3>
     </div>
     <div class="ms-md-auto py-2 py-md-0">
-    <a href="@Url.Action("Index", "SalesPerson")" class="btn btn-label-info btn-round">
+    <a href="@Url.Action("ListNotifications", "SalesPerson")" class="btn btn-label-info btn-round">
         <i class="fas fa-arrow-left"></i> Back to Notifications
     </a>
     </div>
@@ -28,14 +28,29 @@
                         <strong>Message:</strong> @Model.Message
                     </p>
                 </div>
+                <div class="mt-2 mb-3">
+                    <p class="text-muted">
+                        <strong>Notes:</strong> @Model.Notes
+                    </p>
+                </div>
             </div>
             <div class="card-footer">
                 <div class="d-flex justify-content-between">
                     <small class="text-muted">Created on: @Model.CreatedAt.ToString("MMMM dd, yyyy")</small>
                     @if(Model.NotificationType == "ConsultationRequest" || Model.NotificationType == "TestDriveRequest")
                     {
-                        <form method="post" action="@Url.Action("HandleNotification", "SalesPerson", new { id = Model.NotificationId })">
-                            <button type="submit" class="btn btn-primary btn-round">Handle Request</button>
+                        <form method="post" action="@Url.Action("HandleNotification", "SalesPerson")" class="handle-form">
+                            <input type="hidden" name="NotificationId" value="@Model.NotificationId" />
+                            <input type="hidden" name="NotificationType" value="@Model.NotificationType" />
+                            <input type="hidden" name="CustomerId" value="@Model.CustomerId" />
+                            <input type="hidden" name="DealerId" value="@Model.DealerId" />
+                            <input type="hidden" name="SalesPersonId" value="@Model.SalesPersonId" />
+                            <input type="hidden" name="ConsultHistoryId" value="@Model.ConsultHistoryId" />
+                            <input type="hidden" name="TestDriveId" value="@Model.TestDriveId" />
+                            <input type="hidden" name="IsRead" value="@Model.IsRead" />
+                            <input type="hidden" name="Message" value="@Model.Message" />
+                            <input type="hidden" name="CreatedAt" value="@Model.CreatedAt" />
+                            <button type="button" class="btn btn-primary btn-round btn-handle-request" data-id="@Model.NotificationId">Handle Request</button>
                         </form>
                     }
                 </div>
@@ -43,3 +58,57 @@
         </div>
     </div>
 </div>
+
+
+<!-- Modal Konfirmasi (bisa juga pakai ViewComponent jika ingin dinamis) -->
+<div class="modal fade" id="modalConfirmation" tabindex="-1" aria-labelledby="modalConfirmationLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalConfirmationLabel">Konfirmasi</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                Anda yakin ingin memproses request ini?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                <button type="button" class="btn btn-primary" id="btn-confirm-yes">Ya</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+@* Success Modal *@
+@if (ViewBag.SuccessModal != null)
+{
+    @await Component.InvokeAsync("ModalComponent", ViewBag.SuccessModal)
+}
+
+@* Error Modal *@
+@if (ViewBag.ErrorModal != null)
+{
+    @await Component.InvokeAsync("ModalComponent", ViewBag.ErrorModal)
+}
+
+@section Scripts {
+<script>
+        let formToSubmit = null;
+        document.querySelectorAll('.btn-handle-request').forEach(btn => {
+                btn.addEventListener('click', function(e) {
+                        formToSubmit = this.closest('form');
+                        var modal = new bootstrap.Modal(document.getElementById('modalConfirmation'));
+                        modal.show();
+                });
+        });
+        document.getElementById('btn-confirm-yes').addEventListener('click', function() {
+                if (formToSubmit) {
+                        formToSubmit.submit();
+                }
+                var modal = bootstrap.Modal.getInstance(document.getElementById('modalConfirmation'));
+                modal.hide();
+        });
+</script>
+}

@@ -59,16 +59,27 @@
                                 <small class="text-muted text-danger"> "Unread"</small>
                             }
                         </div>
-                        @if(notification.NotificationType == "ConsultationRequest" || notification.NotificationType == "TestDriveRequest")
-                        {
-                            <form method="post" action="@Url.Action("HandleNotification", "SalesPerson")" class="handle-form">
-                                <input type="hidden" name="NotificationId" value="@notification.NotificationId" />
-                                <input type="hidden" name="NotificationType" value="@notification.NotificationType" />
-                                <input type="hidden" name="IsRead" value="@notification.IsRead" />
-                                <input type="hidden" name="Message" value="@notification.Message" />
-                                <button type="button" class="btn btn-primary btn-round btn-handle-request" data-id="@notification.NotificationId">Handle Request</button>
-                            </form>
-                        }
+                        <div class="d-flex gap-2">
+                            <a type="button" href="@Url.Action("DetailNotifications", "SalesPerson", new { id = notification.NotificationId, NotificationType = notification.NotificationType })" class="btn btn-secondary btn-round">
+                                Details
+                            </a>
+                            @if(notification.NotificationType == "ConsultationRequest" || notification.NotificationType == "TestDriveRequest")
+                            {
+                                <form method="post" action="@Url.Action("HandleNotification", "SalesPerson")" class="handle-form">
+                                    <input type="hidden" name="NotificationId" value="@notification.NotificationId" />
+                                    <input type="hidden" name="NotificationType" value="@notification.NotificationType" />
+                                    <input type="hidden" name="CustomerId" value="@notification.CustomerId" />
+                                    <input type="hidden" name="DealerId" value="@notification.DealerId" />
+                                    <input type="hidden" name="SalesPersonId" value="@notification.SalesPersonId" />
+                                    <input type="hidden" name="ConsultHistoryId" value="@notification.ConsultHistoryId" />
+                                    <input type="hidden" name="TestDriveId" value="@notification.TestDriveId" />
+                                    <input type="hidden" name="IsRead" value="@notification.IsRead" />
+                                    <input type="hidden" name="Message" value="@notification.Message" />
+                                    <input type="hidden" name="CreatedAt" value="@notification.CreatedAt" />
+                                    <button type="button" class="btn btn-primary btn-round btn-handle-request" data-id="@notification.NotificationId">Handle Request</button>
+                                </form>
+                            }
+                        </div>
                     </div>
                 </div>
             </div>
@@ -95,6 +106,18 @@
         </div>
     </div>
 </div>
+
+@* Success Modal *@
+@if (ViewBag.SuccessModal != null)
+{
+    @await Component.InvokeAsync("ModalComponent", ViewBag.SuccessModal)
+}
+
+@* Error Modal *@
+@if (ViewBag.ErrorModal != null)
+{
+    @await Component.InvokeAsync("ModalComponent", ViewBag.ErrorModal)
+}
 
 @section Scripts {
 <script>
