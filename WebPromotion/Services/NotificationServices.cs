@@ -45,11 +45,11 @@ namespace WebPromotion.Services
             }
         }
 
-        public async Task<NotificationDTO> GetNotificationById(int id)
+        public async Task<NotificationDTO> GetNotificationById(int id, string NotificationType)
         {
             try
             {
-                var response = await _httpClient.GetAsync($"Notification/GetNotificationById/{id}");
+                var response = await _httpClient.GetAsync($"Notification/GetNotificationById/{id}/{NotificationType}");
                 response.EnsureSuccessStatusCode();
 
                 var content = await response.Content.ReadAsStringAsync();
@@ -128,22 +128,37 @@ namespace WebPromotion.Services
             }
         }
 
-        public async Task<NotificationDTO> UpdateReadAndNotificationTypeClient(NotificationDTO notification)
+        public async Task<NotificationDTO> UpdateReadAndNotificationTypeClient(NotificationDTO notification, int salesPersonId)
         {
             try
             {
-                var response = _httpClient.PutAsJsonAsync("Notification/UpdateRead-and-NotificationType", notification);
-                response.Result.EnsureSuccessStatusCode();
+                var json = JsonSerializer.Serialize(notification);
+                Console.WriteLine($"UpdateReadAndNotificationTypeClient: {json}");
+                var response = await _httpClient.PutAsJsonAsync($"Notification/UpdateRead-and-NotificationType/{salesPersonId}", notification);
 
-                var content = response.Result.Content.ReadAsStringAsync().Result;
-                return JsonSerializer.Deserialize<NotificationDTO>(content, new JsonSerializerOptions
+                var content = await response.Content.ReadAsStringAsync();
+                Console.WriteLine($"UpdateReadAndNotificationTypeClient: Response status code: {response.StatusCode}");
+                Console.WriteLine($"UpdateReadAndNotificationTypeClient: Response content: {content}");
+
+                if (!response.IsSuccessStatusCode)
                 {
-                    PropertyNameCaseInsensitive = true
-                });
+                    throw new Exception($"API returned error {(int)response.StatusCode}: {content}");
+                }
+
+                if (!string.IsNullOrWhiteSpace(content))
+                {
+                    return JsonSerializer.Deserialize<NotificationDTO>(content, new JsonSerializerOptions
+                    {
+                        PropertyNameCaseInsensitive = true
+                    });
+                }
+                else
+                {
+                    return notification;
+                }
             }
             catch (Exception ex)
             {
-                // Log the exception
                 throw new Exception("Error updating notification type", ex);
             }
         }

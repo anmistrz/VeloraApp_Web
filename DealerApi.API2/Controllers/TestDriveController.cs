@@ -1,6 +1,7 @@
 using DealerApi.Application.DTO;
 using DealerApi.Application.Interface;
 using DealerApi.Entities.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -10,11 +11,11 @@ namespace DealerApi.API.Controllers
     [ApiController]
     public class TestDriveController : ControllerBase
     {
-        private readonly ITestDriveServices _testDriveServices;
+        private readonly ITestDriveBL _testDriveBL;
 
-        public TestDriveController(ITestDriveServices testDriveServices)
+        public TestDriveController(ITestDriveBL testDriveBL)
         {
-            _testDriveServices = testDriveServices ?? throw new ArgumentNullException(nameof(testDriveServices));
+            _testDriveBL = testDriveBL;
         }
 
         [HttpPost("create-guest")]
@@ -60,8 +61,8 @@ namespace DealerApi.API.Controllers
                     DealerId = testDriveGuestDto.DealerId
                 };
 
-                var result = await _testDriveServices.CreateTestDriveGuestAsync(dtCustomer, dtTestDrive, dtDealerCar);
-                
+                var result = await _testDriveBL.CreateTestDriveGuestAsync(dtCustomer, dtTestDrive, dtDealerCar);
+
                 if (result == null)
                 {
                     return StatusCode(StatusCodes.Status500InternalServerError, "Failed to create test drive.");
@@ -80,7 +81,84 @@ namespace DealerApi.API.Controllers
                 // Log the exception as needed
                 return StatusCode(StatusCodes.Status500InternalServerError, "Internal server error: " + ex.Message);
             }
+
         }
-        
+
+
+        [HttpGet("by-salesperson/{salesPersonId}")]
+        public async Task<IActionResult> GetTestDrivesBySalesPersonId(int salesPersonId)
+        {
+            try
+            {
+                var result = await _testDriveBL.GetTestDrivesBySalesPersonIdAsync(salesPersonId);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                // Log the exception as needed
+                return StatusCode(StatusCodes.Status500InternalServerError, "Internal server error: " + ex.Message);
+            }
+        }
+
+        [HttpPost("delete-after-handled/{testDriveId}")]
+        [Authorize(Roles = "salesPerson")]
+        public async Task<IActionResult> DeleteTestDriveAfterHandled(int testDriveId, [FromBody] DeleteTestDriveRequestDTO deleteTestDriveRequest)
+        {
+            try
+            {
+                if (deleteTestDriveRequest == null)
+                {
+                    return BadRequest(new { error = "Request body cannot be null or empty" });
+                }
+
+                var result = await _testDriveBL.DeleteTestDriveAfterHandledAsync(testDriveId, deleteTestDriveRequest);
+                if (!result)
+                {
+                    return NotFound(new { error = "Test drive not found or could not be deleted" });
+                }
+                return NoContent();
+            }
+            catch (Exception ex)
+            {
+                // Log the exception as needed
+                return StatusCode(StatusCodes.Status500InternalServerError, new { error = "Internal server error", message = ex.Message });
+            }
+        }
+
+        [HttpDelete("delete-before-handled")]
+        [Authorize(Roles = "salesPerson")]
+        public async Task<IActionResult> DeleteTestDriveBeforeHandled(int consultHistoryId, [FromBody] DeleteTestDriveRequestDTO deleteTestDriveRequest)
+        {
+            try
+            {
+                if (deleteTestDriveRequest == null)
+                {
+                    return BadRequest(new { error = "Request body cannot be null or empty" });
+                }
+
+                if (!ModelState.IsValid)
+                {
+                    var errors = ModelState
+                        .Where(x => x.Value != null && x.Value.Errors.Count > 0)
+                        .ToDictionary(
+                            kvp => kvp.Key,
+                            kvp => kvp.Value!.Errors.Select(e => e.ErrorMessage).ToArray()
+                        );
+                    return BadRequest(new { errors });
+                }
+
+                var result = await _testDriveBL.DeleteTestDriveBeforeHandledAsync(consultHistoryId, deleteTestDriveRequest);
+                if (!result)
+                {
+                    return NotFound(new { error = "Test drive not found or could not be deleted" });
+                }
+                return NoContent();
+            }
+            catch (Exception ex)
+            {
+                // Log the exception as needed
+                return StatusCode(StatusCodes.Status500InternalServerError, new { error = "Internal server error", message = ex.Message });
+            }
+        }
     }
 }

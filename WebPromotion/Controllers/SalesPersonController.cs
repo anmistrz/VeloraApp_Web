@@ -18,50 +18,73 @@ namespace WebPromotion.Controllers
     {
         private readonly ILogger<SalesPersonController> _logger;
         private readonly INotificationBusiness _notificationServices;
+        private readonly IAccountBusiness _accountBusiness;
 
-        public SalesPersonController(ILogger<SalesPersonController> logger, INotificationBusiness notificationServices)
+        public SalesPersonController(ILogger<SalesPersonController> logger, INotificationBusiness notificationServices, IAccountBusiness accountBusiness)
         {
             _logger = logger;
             _notificationServices = notificationServices;
+            _accountBusiness = accountBusiness;
         }
 
         [HttpGet]
         [Route("")]
         public IActionResult Index()
         {
-            // var limitNotification = _notificationServices.GetLimitNotification(10, 2); // Example customId
-
-            // if (limitNotification != null)
-            // {
-            //     ViewBag.LimitNotification = limitNotification;
-            // }
-
             if (TempData["SuccessModal"] != null)
             {
                 var successModalJson = TempData["SuccessModal"]?.ToString();
-                if (!string.IsNullOrEmpty(successModalJson))
+                if (!string.IsNullOrWhiteSpace(successModalJson))
                 {
-                    ViewBag.SuccessModal = JsonSerializer.Deserialize<ModalViewModels>(successModalJson);
+                    try
+                    {
+                        ViewBag.SuccessModal = JsonSerializer.Deserialize<ModalViewModels>(successModalJson);
+                    }
+                    catch (JsonException ex)
+                    {
+                        // Optional: log error
+                        ViewBag.SuccessModal = null;
+                    }
                 }
             }
 
             if (TempData["ErrorModal"] != null)
             {
                 var errorModalJson = TempData["ErrorModal"]?.ToString();
-                if (!string.IsNullOrEmpty(errorModalJson))
+                if (!string.IsNullOrWhiteSpace(errorModalJson))
                 {
-                    ViewBag.ErrorModal = JsonSerializer.Deserialize<ModalViewModels>(errorModalJson);
+                    try
+                    {
+                        ViewBag.ErrorModal = JsonSerializer.Deserialize<ModalViewModels>(errorModalJson);
+                    }
+                    catch (JsonException ex)
+                    {
+                        // Optional: log error
+                        ViewBag.ErrorModal = null;
+                    }
                 }
             }
+
             return View();
         }
 
         [HttpGet]
-        [Route("DetailNotifications/{id}")]
-        public async Task<IActionResult> DetailNotificationsAsync(int id)
+        [Route("DetailNotifications/{id}/{NotificationType}")]
+        public async Task<IActionResult> DetailNotificationsAsync(int id, string NotificationType)
         {
-            var notifications = await _notificationServices.GetNotificationById(id);
-            return View(notifications);
+            if (NotificationType == "ConsultationRequestHandled")
+            {
+                var notifications = await _notificationServices.GetNotificationById(id, "ConsultationRequest");
+                return View(notifications);
+            }
+            else if (NotificationType == "TestDriveRequest")
+            {
+                var testDriveRequest = await _notificationServices.GetNotificationById(id, "TestDriveRequest");
+                return View(testDriveRequest);
+            }
+
+            var notification = await _notificationServices.GetNotificationById(id, NotificationType);
+            return View(notification);
         }
 
 
@@ -69,13 +92,50 @@ namespace WebPromotion.Controllers
         [Route("ListNotifications")]
         public async Task<IActionResult> ListNotifications(string search)
         {
+            Console.WriteLine("SuccessModal", TempData["SuccessModal"]?.ToString());
             var getDealerId = ViewBag.DealerId != null ? Convert.ToInt32(ViewBag.DealerId) : 0;
             var getSearch = !string.IsNullOrEmpty(search) ? search : string.Empty;
+
+            if (TempData["SuccessModal"] != null)
+            {
+                var successModalJson = TempData["SuccessModal"]?.ToString();
+                if (!string.IsNullOrWhiteSpace(successModalJson))
+                {
+                    try
+                    {
+                        ViewBag.SuccessModal = JsonSerializer.Deserialize<ModalViewModels>(successModalJson);
+                    }
+                    catch (JsonException ex)
+                    {
+                        // Optional: log error
+                        ViewBag.SuccessModal = null;
+                    }
+                }
+            }
+
+            if(TempData["ErrorModal"] != null)
+            {
+                var errorModalJson = TempData["ErrorModal"]?.ToString();
+                if (!string.IsNullOrWhiteSpace(errorModalJson))
+                {
+                    try
+                    {
+                        ViewBag.ErrorModal = JsonSerializer.Deserialize<ModalViewModels>(errorModalJson);
+                    }
+                    catch (JsonException ex)
+                    {
+                        // Optional: log error
+                        ViewBag.ErrorModal = null;
+                    }
+                }
+            }
+
             if (getSearch == string.Empty)
             {
                 var ListNotifications = await _notificationServices.GetLimitNotification(200, getDealerId);
                 return View(ListNotifications);
-            } else
+            }
+            else
             {
                 var ListNotifications = await _notificationServices.GetNotificationBySearchBussiness(getSearch, getDealerId);
                 return View(ListNotifications);
@@ -101,28 +161,37 @@ namespace WebPromotion.Controllers
 
         [HttpPost]
         [Route("HandleNotification")]
-        public IActionResult HandleNotification(NotificationDTO notification)
+        public async Task<IActionResult> HandleNotification(NotificationDTO notification)
         {
-            Console.WriteLine($"Handling notification with ID: {notification.NotificationId}");
+            Console.WriteLine("Handling notification...");
+            Console.WriteLine($"Handling notification with Controlleer: {JsonSerializer.Serialize(notification)}");
             if (notification.NotificationId <= 0 || notification == null)
             {
                 TempData["ErrorModal"] = JsonSerializer.Serialize(new ModalViewModels
                 {
                     Title = "Error",
                     Message = "Invalid notification ID.",
-                    ButtonText = "OK"
+                    ButtonText = "OK",
+                    IsVisible = true,
+                    Type = "error"
                 });
                 return RedirectToAction("ListNotifications");
             }
 
-            var result = _notificationServices.UpdateReadAndNotificationTypeBusiness(notification);
+            var salesPersonId = ViewBag.SalesPersonId != null ? Convert.ToInt32(ViewBag.SalesPersonId) : 0;
+            Console.WriteLine($"SalesPersonId: {salesPersonId}");
+
+            var result = await _notificationServices.UpdateReadAndNotificationTypeBusiness(notification, salesPersonId);
+            Console.WriteLine($"Notification processed: {result == null}");
             if (result == null)
             {
                 TempData["ErrorModal"] = JsonSerializer.Serialize(new ModalViewModels
                 {
                     Title = "Error",
                     Message = "Failed to process notification.",
-                    ButtonText = "OK"
+                    ButtonText = "OK",
+                    IsVisible = true,
+                    Type = "error"
                 });
                 return RedirectToAction("ListNotifications");
             }
@@ -132,12 +201,22 @@ namespace WebPromotion.Controllers
                 {
                     Title = "Success",
                     Message = "Notification processed successfully.",
-                    ButtonText = "OK"
+                    ButtonText = "OK",
+                    IsVisible = true,
+                    Type = "success"
                 });
+
                 return RedirectToAction("ListNotifications");
             }
         }
 
+        [HttpPost]
+        [Route("logout")]
+        public async Task<IActionResult> Logout()
+        {
+            await _accountBusiness.LogoutBusiness();
+            return RedirectToAction("Login", "Account");
+        }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()

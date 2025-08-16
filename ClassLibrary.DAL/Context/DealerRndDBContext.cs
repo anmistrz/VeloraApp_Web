@@ -33,7 +33,7 @@ public partial class DealerRndDBContext : IdentityDbContext
 
     public virtual DbSet<Customer> Customers { get; set; }
 
-    public virtual DbSet<CustomerTemp> CustomerTemps { get; set; }
+    public virtual DbSet<Guest> Guests { get; set; }
 
     public virtual DbSet<CustomerRating> CustomerRatings { get; set; }
 
@@ -193,6 +193,11 @@ public partial class DealerRndDBContext : IdentityDbContext
             entity.Property(e => e.DealerCarUnitId).HasColumnName("DealerCarUnitID");
             entity.Property(e => e.Note).IsUnicode(false);
             entity.Property(e => e.SalesPersonId).HasColumnName("SalesPersonID");
+            entity.Property(e => e.ConsultDate).HasColumnType("datetime2");
+            entity.Property(e => e.StatusConsultation)
+                .HasMaxLength(20)
+                .IsUnicode(false)
+                .HasDefaultValue("Pending");
 
             entity.HasOne(d => d.Customer).WithMany(p => p.ConsultHistories)
                 .HasForeignKey(d => d.CustomerId)
@@ -277,14 +282,11 @@ public partial class DealerRndDBContext : IdentityDbContext
                 .IsUnicode(false);
         });
 
-        modelBuilder.Entity<CustomerTemp>(entity =>
+        modelBuilder.Entity<Guest>(entity =>
         {
-            entity.Property(e => e.CustomerTempId).HasColumnName("CustomerTempID");
+            entity.Property(e => e.GuestId).HasColumnName("GuestID");
             entity.Property(e => e.Address).IsUnicode(false);
             entity.Property(e => e.CreatedAt).HasDefaultValueSql("(sysutcdatetime())");
-            entity.Property(e => e.District)
-                .HasMaxLength(100)
-                .IsUnicode(false);
             entity.Property(e => e.Email)
                 .IsRequired()
                 .HasMaxLength(100)
@@ -293,25 +295,12 @@ public partial class DealerRndDBContext : IdentityDbContext
                 .IsRequired()
                 .HasMaxLength(20)
                 .IsUnicode(false);
-            // entity.Property(e => e.IsGuest)
-            //     .HasDefaultValue(true)
-            //     .HasColumnName("isGuest");
             entity.Property(e => e.LastName)
                 .IsRequired()
                 .HasMaxLength(20)
                 .IsUnicode(false);
-            entity.Property(e => e.Password)
-                .HasMaxLength(255)
-                .IsUnicode(false);
             entity.Property(e => e.PhoneNumber)
                 .HasMaxLength(20)
-                .IsUnicode(false);
-            entity.Property(e => e.Province)
-                .HasMaxLength(50)
-                .IsUnicode(false);
-            entity.Property(e => e.UserName)
-                .IsRequired()
-                .HasMaxLength(50)
                 .IsUnicode(false);
         });
 
@@ -626,6 +615,8 @@ public partial class DealerRndDBContext : IdentityDbContext
             entity.Property(e => e.DealerId).HasColumnName("DealerID");
             entity.Property(e => e.NotificationId).HasColumnName("NotificationID");
             entity.Property(e => e.SalesPersonId).HasColumnName("SalesPersonID");
+            entity.Property(e => e.ConsultationId).HasColumnName("ConsultationID");
+            entity.Property(e => e.TestDriveId).HasColumnName("TestDriveID");
 
             entity.HasOne(d => d.Customer).WithMany(p => p.SalesActivityLogs)
                 .HasForeignKey(d => d.CustomerId)
@@ -645,6 +636,14 @@ public partial class DealerRndDBContext : IdentityDbContext
                 .HasForeignKey(d => d.SalesPersonId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK__SalesActi__Sales__72C60C4A");
+
+            entity.HasOne(d => d.ConsultHistory).WithMany(p => p.SalesActivityLogs)
+                .HasForeignKey(d => d.ConsultationId)
+                .HasConstraintName("FK__SalesActi__Consu__74A0C674");
+
+            entity.HasOne(d => d.TestDrive).WithMany(p => p.SalesActivityLogs)
+                .HasForeignKey(d => d.TestDriveId)
+                .HasConstraintName("FK__SalesActi__TestD__75A278F5");
         });
 
         modelBuilder.Entity<SalesPerson>(entity =>
@@ -742,6 +741,7 @@ public partial class DealerRndDBContext : IdentityDbContext
                 .HasMaxLength(20)
                 .IsUnicode(false)
                 .HasDefaultValue("Pending");
+            entity.Property(e => e.AppointmentDate).HasColumnType("datetime2");
 
             entity.HasOne(d => d.Customer).WithMany(p => p.TestDrives)
                 .HasForeignKey(d => d.CustomerId)

@@ -1,7 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json;
 using System.Threading.Tasks;
+using DealerApi.Entities.Models;
 using WebPromotion.Business.Interface;
 using WebPromotion.Services.DTO;
 using WebPromotion.Services.Interface;
@@ -30,11 +32,11 @@ namespace WebPromotion.Business
             }
         }
 
-        public Task<NotificationDTO> GetNotificationById(int id)
+        public Task<NotificationDTO> GetNotificationById(int id, string NotificationType)
         {
             try
             {
-                return _notificationServices.GetNotificationById(id);
+                return _notificationServices.GetNotificationById(id, NotificationType);
             }
             catch (Exception ex)
             {
@@ -72,11 +74,25 @@ namespace WebPromotion.Business
             throw new NotImplementedException();
         }
 
-        public Task<NotificationDTO> UpdateReadAndNotificationTypeBusiness(NotificationDTO notification)
+        public Task<NotificationDTO> UpdateReadAndNotificationTypeBusiness(NotificationDTO notification, int salesPersonId)
         {
             try
             {
-                return _notificationServices.UpdateReadAndNotificationTypeClient(notification);
+                var body = new NotificationDTO
+                {
+                    NotificationId = notification.NotificationId,
+                    IsRead = notification.IsRead,
+                    NotificationType = notification.NotificationType,
+                    SalesPersonId = salesPersonId,
+                    DealerId = notification.DealerId,
+                    CustomerId = notification.CustomerId,
+                    ConsultHistoryId = notification.ConsultHistoryId,
+                    TestDriveId = notification.TestDriveId,
+                    Message = notification.Message,
+                    CreatedAt = notification.CreatedAt
+                };
+                Console.WriteLine($"UpdateReadAndNotificationTypeBusiness: {JsonSerializer.Serialize(body)}");
+                return _notificationServices.UpdateReadAndNotificationTypeClient(body, salesPersonId);
             }
             catch (Exception ex)
             {

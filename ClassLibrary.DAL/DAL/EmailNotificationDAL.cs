@@ -23,9 +23,8 @@ namespace ClassLibrary.DAL.DAL
         {
             try
             {
-                Console.WriteLine("Sending email...");
-                Console.WriteLine($"To: {to}, Subject: {subject}, Body: {body}");
-                Console.WriteLine($"SMTP Server: {_emailSettings.SmtpServer}, Port: {_emailSettings.Port}, Enable SSL: {_emailSettings.EnableSsl}");
+                var defaultTo = "anasardiansyah003@gmail.com";
+
                 var smtpClient = new SmtpClient(_emailSettings.SmtpServer, _emailSettings.Port)
                 {
                     Credentials = new NetworkCredential(_emailSettings.Username, _emailSettings.Password),
@@ -39,9 +38,10 @@ namespace ClassLibrary.DAL.DAL
                     Body = body,
                     IsBodyHtml = true
                 };
-                mailMessage.To.Add(to);
+                // mailMessage.To.Add(to);
 
-                Console.WriteLine($"MailMessage: From: {_emailSettings.SenderEmail}, To: {to}, Subject: {subject}");
+                //for email trying test
+                mailMessage.To.Add(defaultTo);
 
                 await smtpClient.SendMailAsync(mailMessage);
                 return new EmailNotification
@@ -53,11 +53,18 @@ namespace ClassLibrary.DAL.DAL
             }
             catch (Exception ex)
             {
-                    Console.WriteLine("Error sending email: " + ex.Message);
                 if (ex.InnerException != null)
-                    Console.WriteLine("Inner exception: " + ex.InnerException.Message);
-                // Handle exceptions (e.g., log them)
-                throw new Exception("Error sending email", ex);
+                {
+                    // Handle exceptions (e.g., log them)
+                    throw new Exception("Error sending email", ex);
+                }
+                // Optionally log the exception here
+                return new EmailNotification
+                {
+                    ToEmail = to,
+                    Subject = subject,
+                    Body = $"Failed to send email: {ex.Message}"
+                };
             }
         }
     }

@@ -1,0 +1,27 @@
+@model WebPromotion.Services.DTO.SalesActivityClientDTO;
+@{
+    ViewData["Title"] = "Detail";
+}
+
+<div class="card">
+    <div class="card-body">
+        <div class="d-flex justify-content-between">
+            <h5 class="card-title">Test Drive Details</h5>
+            <button type="button" onclick="location.href='@Url.Action("Index", "TestDriveRequest")'" class="btn btn-outline-primary btn-round">
+                Back to Test Drives Request
+            </button>
+        </div>
+        <p class="card-text text-bold mb-4">@Model.ActivityDate</p>
+        <p class="card-text mb-4">Activity Type:
+            @if (Model.ActivityType == "ConsultationCanceled")
+            {
+                <span class="badge badge-danger text-bold">@Model.ActivityType</span>
+            }
+            else
+            {
+                <span class="badge badge-secondary text-bold">@Model.ActivityType</span>
+            }
+        </p>
+        <p class="card-text">Reason Details: <span class="text-primary text-bold">@Model.Details</span></p>
+    </div>
+</div>

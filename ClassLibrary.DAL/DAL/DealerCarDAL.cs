@@ -33,9 +33,17 @@ namespace ClassLibrary.DAL
             throw new NotImplementedException();
         }
 
-        public Task<DealerCarUnit> GetByIdAsync(int id)
+        public async Task<DealerCarUnit> GetByIdAsync(int id)
         {
-            throw new NotImplementedException();
+            try
+            {
+                return await _context.DealerCarUnits.FindAsync(id);
+            }
+            catch (Exception ex)
+            {
+                // Handle exceptions as needed
+                throw new Exception("Error retrieving dealer car unit by ID", ex);
+            }
         }
 
         public async Task<IEnumerable<(Dealer, Car, DealerCarUnit)>> GetOptionsDealerCarUnitByStatusAsync(string status)

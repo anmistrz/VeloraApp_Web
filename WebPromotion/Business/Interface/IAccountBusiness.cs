@@ -9,5 +9,6 @@ namespace WebPromotion.Business.Interface
     public interface IAccountBusiness
     {
         public Task<UserViewModel> LoginBusiness(LoginViewModel model);
+        public Task<string> LogoutBusiness();
     }
 }

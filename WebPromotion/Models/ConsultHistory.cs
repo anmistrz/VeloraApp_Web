@@ -21,6 +21,8 @@ public partial class ConsultHistory
 
     public string Note { get; set; }
 
+    public string? StatusConsultation { get; set; }
+
     public virtual Customer Customer { get; set; }
 
     public virtual ICollection<CustomerRating> CustomerRatings { get; set; } = new List<CustomerRating>();
@@ -30,4 +32,6 @@ public partial class ConsultHistory
     public virtual ICollection<Notification> Notifications { get; set; } = new List<Notification>();
 
     public virtual SalesPerson SalesPerson { get; set; }
+
+    public virtual ICollection<SalesActivityLog> SalesActivityLogs { get; set; } = new List<SalesActivityLog>();
 }

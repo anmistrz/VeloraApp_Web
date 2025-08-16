@@ -29,6 +29,7 @@ namespace WebPromotion.Business
                     {
                         DealerID = d.DealerID,
                         DealerName = d.DealerName,
+                        DealerCarUnitId = d.DealerCarUnitId
                     }).ToList(),
                     Cars = dto.Cars.Select(c => new CarOptionsDTO
                     {

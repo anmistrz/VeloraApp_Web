@@ -12,24 +12,24 @@ namespace DealerApi.API2.Controllers
     [Route("api/[controller]")]
     public class SalesPersonController : ControllerBase
     {
-        private readonly ISalesPersonServices _salesPersonServices;
+        private readonly ISalesPersonBL _salesPersonBL;
 
-        public SalesPersonController(ISalesPersonServices salesPersonServices)
+        public SalesPersonController(ISalesPersonBL salesPersonBL)
         {
-            _salesPersonServices = salesPersonServices;
+            _salesPersonBL = salesPersonBL;
         }
 
         [HttpGet]
         public async Task<IActionResult> GetAllSalesPersons()
         {
-            var salesPersons = await _salesPersonServices.GetAllSalesPersonsAsync();
+            var salesPersons = await _salesPersonBL.GetAllSalesPersonsAsync();
             return Ok(salesPersons);
         }
 
         [HttpGet("{id}")]
         public async Task<IActionResult> GetSalesPersonById(int id)
         {
-            var salesPerson = await _salesPersonServices.GetSalesPersonByIdAsync(id);
+            var salesPerson = await _salesPersonBL.GetSalesPersonByIdAsync(id);
             if (salesPerson == null)
             {
                 return NotFound();
@@ -45,7 +45,7 @@ namespace DealerApi.API2.Controllers
                 return BadRequest();
             }
 
-            var createdSalesPerson = await _salesPersonServices.CreateSalesPersonAsync(salesPerson);
+            var createdSalesPerson = await _salesPersonBL.CreateSalesPersonAsync(salesPerson);
             return CreatedAtAction(nameof(GetSalesPersonById), new { id = createdSalesPerson.SalesPersonId }, createdSalesPerson);
         }
 
@@ -57,7 +57,7 @@ namespace DealerApi.API2.Controllers
                 return BadRequest();
             }
 
-            var updatedSalesPerson = await _salesPersonServices.UpdateSalesPersonAsync(salesPerson);
+            var updatedSalesPerson = await _salesPersonBL.UpdateSalesPersonAsync(salesPerson);
             if (updatedSalesPerson == null)
             {
                 return NotFound();
@@ -68,7 +68,7 @@ namespace DealerApi.API2.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteSalesPerson(int id)
         {
-            var result = await _salesPersonServices.DeleteSalesPersonAsync(id);
+            var result = await _salesPersonBL.DeleteSalesPersonAsync(id);
             if (!result)
             {
                 return NotFound();
@@ -81,7 +81,7 @@ namespace DealerApi.API2.Controllers
         {
             try
             {
-                var salesPersons = await _salesPersonServices.GetSalesPersonsByDealerIdAsync(dealerId);
+                var salesPersons = await _salesPersonBL.GetSalesPersonsByDealerIdAsync(dealerId);
                 return Ok(salesPersons);
             }
             catch (Exception ex)

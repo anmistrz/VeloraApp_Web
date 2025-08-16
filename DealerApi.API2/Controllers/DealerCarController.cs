@@ -11,11 +11,11 @@ namespace DealerApi.API2.Controllers
     [Route("api/[controller]")]
     public class DealerCarController : ControllerBase
     {
-        private readonly IDealerCarServices _dealerCarService;
+        private readonly IDealerCarBL _dealerCarBL;
 
-        public DealerCarController(IDealerCarServices dealerCarServices)
+        public DealerCarController(IDealerCarBL dealerCarBL)
         {
-            _dealerCarService = dealerCarServices;
+            _dealerCarBL = dealerCarBL;
         }
 
         [HttpGet("options-by-status/{status}")]
@@ -23,7 +23,7 @@ namespace DealerApi.API2.Controllers
         {
             try
             {
-                var options = await _dealerCarService.GetOptionsDealerCarUnitByStatus(status);
+                var options = await _dealerCarBL.GetOptionsDealerCarUnitByStatus(status);
                 return Ok(options);
             }
             catch (Exception ex)

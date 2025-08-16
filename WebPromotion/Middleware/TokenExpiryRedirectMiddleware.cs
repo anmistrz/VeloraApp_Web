@@ -12,6 +12,16 @@ namespace WebPromotion.Middleware
     public class TokenExpiryRedirectMiddleware
     {
         private readonly RequestDelegate _next;
+        private static readonly HashSet<string> PathsNotHandledByMiddleware = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+        {
+            "/Login",
+            "/Register",
+            "/",
+            "/Error",
+            "/Home/Index",
+            "/Home/AddConsultation",
+            "/Home/AddTestDrive"
+        };
 
         public TokenExpiryRedirectMiddleware(RequestDelegate next)
         {
@@ -20,44 +30,35 @@ namespace WebPromotion.Middleware
 
         public async Task InvokeAsync(HttpContext context)
         {
-            var token = context.Request.Cookies["MyJwtCookie"];
-            var listPathNotHandledMiddleware = new List<string>();
+            // Skip middleware for certain paths
+            if (PathsNotHandledByMiddleware.Contains(context.Request.Path))
             {
-                listPathNotHandledMiddleware.Add("/Login");
-                listPathNotHandledMiddleware.Add("/Register");
-                listPathNotHandledMiddleware.Add("/");
-                listPathNotHandledMiddleware.Add("/Error");
-            }
-            Console.WriteLine($"Token from cookie: {token}");   
-            if (!string.IsNullOrEmpty(token))
-            {
-                var handler = new JwtSecurityTokenHandler();
-                var jwt = handler.ReadJwtToken(token);
-
-                Console.WriteLine($"Token: {token}");
-                // Check expiry
-                if (jwt.ValidTo < DateTime.UtcNow)
-                {
-                    Console.WriteLine("Token expired, redirecting to login page.");
-                    context.Response.Redirect("/Login");
-                    return;
-                }
-            }
-
-            if (listPathNotHandledMiddleware.Any(path => context.Request.Path.StartsWithSegments(path)))
-            {
-                Console.WriteLine($"Path {context.Request.Path} is not handled by middleware, skipping token validation.");
                 await _next(context);
                 return;
             }
-            else
+
+            var token = context.Request.Cookies["MyJwtCookie"];
+
+            if (string.IsNullOrEmpty(token))
             {
-                if (string.IsNullOrEmpty(token))
-                {
-                    context.Response.Redirect("/Login");
-                    return;
-                }
+                Console.WriteLine($"Token missing for path: {context.Request.Path}, redirecting to login.");
+                context.Response.Redirect("/Login");
+                return;
             }
+
+            var jwtHandler = new JwtSecurityTokenHandler();
+            var jwtToken = jwtHandler.ReadJwtToken(token);
+
+            // Check expiry
+            if (jwtToken.ValidTo < DateTime.UtcNow)
+            {
+                Console.WriteLine("Token expired, redirecting to login page.");
+                context.Response.Redirect("/Login");
+                return;
+            }
+
+            
+
             await _next(context);
         }
     }

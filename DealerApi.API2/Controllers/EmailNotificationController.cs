@@ -12,11 +12,11 @@ namespace DealerApi.API2.Controllers
     [Route("api/[controller]")]
     public class EmailNotificationController : ControllerBase
     {
-        private readonly IEmailNotificationServices _emailNotificationServices;
+        private readonly IEmailNotificationBL _emailNotificationBL;
 
-        public EmailNotificationController(IEmailNotificationServices emailNotificationServices)
+        public EmailNotificationController(IEmailNotificationBL emailNotificationBL)
         {
-            _emailNotificationServices = emailNotificationServices;
+            _emailNotificationBL = emailNotificationBL;
         }
 
         [HttpPost("send")]
@@ -29,13 +29,12 @@ namespace DealerApi.API2.Controllers
 
             try
             {
-                var result = await _emailNotificationServices.SendEmail(emailDto.ToEmail, emailDto.Subject, emailDto.Body);
+                var result = await _emailNotificationBL.SendEmail(emailDto.ToEmail, emailDto.Subject, emailDto.Body);
                 return Ok(result);
             }
             catch (Exception ex)
             {
-                // Handle exceptions (e.g., log them)
-                return StatusCode(500, "Error sending email");
+                return StatusCode(500, "Error sending email: " + ex.Message);
             }
         }
     }

@@ -25,6 +25,7 @@ namespace WebPromotion.Services.DTO
         public bool IsRead { get; set; }
 
         public int Priority { get; set; } 
+        public string? Notes { get; set; }
         
          public DateTime CreatedAt { get; set; }
     }

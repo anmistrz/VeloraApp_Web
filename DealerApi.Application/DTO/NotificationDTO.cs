@@ -7,7 +7,7 @@ namespace DealerApi.Application.DTO
 {
     public class NotificationDTO
     {
-         public int NotificationId { get; set; }
+        public int NotificationId { get; set; }
 
         public int? CustomerId { get; set; }
 
@@ -26,6 +26,9 @@ namespace DealerApi.Application.DTO
         public bool IsRead { get; set; }
 
         public int Priority { get; set; }
+
+        public string? Notes { get; set; }
+        public DateTime CreatedAt { get; set; }
 
     }
 }

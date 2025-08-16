@@ -12,6 +12,11 @@ using WebPromotion.Services.DTO;
 using WebPromotion.ViewModels.TestDriveView;
 using WebPromotion.Business;
 using WebPromotion.Business.Interface;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Identity;
+using WebPromotion.Services.Interface;
+using Microsoft.AspNetCore.Authorization;
+using WebPromotion.ViewModels.TestDriveView.TestDriveGuestViewModel;
 namespace WebPromotion.Controllers
 {
     public class HomeController : Controller
@@ -20,18 +25,21 @@ namespace WebPromotion.Controllers
         private readonly IConsultationBusiness _consultationBusiness;
         private readonly IDealerCarBusiness _dealerCarBusiness;
         private readonly ITestDriveBusiness _testDriveBusiness;
+        private readonly IAccountServices _accountServices;
 
 
         public HomeController(
             ILogger<HomeController> logger,
             IConsultationBusiness consultationBusiness,
             IDealerCarBusiness dealerCarBusiness,
-            ITestDriveBusiness testDriveBusiness)
+            ITestDriveBusiness testDriveBusiness,
+            IAccountServices accountServices)
         {
             _logger = logger;
             _consultationBusiness = consultationBusiness;
             _dealerCarBusiness = dealerCarBusiness ?? throw new ArgumentNullException(nameof(dealerCarBusiness));
             _testDriveBusiness = testDriveBusiness ?? throw new ArgumentNullException(nameof(testDriveBusiness));
+            _accountServices = accountServices ?? throw new ArgumentNullException(nameof(accountServices));
         }
 
         public IActionResult Index()
@@ -48,6 +56,8 @@ namespace WebPromotion.Controllers
                     .SelectMany(optionList => optionList.SelectMany(option => option.Dealers))
                     .Select(x => new SelectListItem
                     {
+                        // Value = x.DealerID.ToString(),
+                        // Text = x.DealerName
                         Value = x.DealerID.ToString(),
                         Text = x.DealerName
                     }).ToList() ?? new List<SelectListItem>();
@@ -95,6 +105,7 @@ namespace WebPromotion.Controllers
             return View();
         }
 
+        [AllowAnonymous]
         [HttpPost]
         public async Task<IActionResult> AddConsultation(ConsultHistoryInsertGuestViewModels model)
         {
@@ -118,7 +129,7 @@ namespace WebPromotion.Controllers
                         Email = model.Email,
                         PhoneNumber = model.PhoneNumber,
                         DealerCarUnitId = int.Parse(getDealerCarUnit[1].Trim()),
-                        // ConsultDate = model.ConsultDate,
+                        ConsultDate = model.ConsultDate,
                         Note = model.Note,
                         SalesPersonId = model.SalesPersonId,
                         Budget = model.Budget ?? 0,
@@ -140,7 +151,7 @@ namespace WebPromotion.Controllers
                     });
 
                     // Redirect ke Index setelah insert berhasil
-                    return RedirectToAction("Index");
+                    return RedirectToAction("Index", "Home");
                 }
                 catch (Exception ex)
                 {
@@ -156,7 +167,7 @@ namespace WebPromotion.Controllers
                         Type = "failed"
                     });
 
-                    return RedirectToAction("Index");
+                    return RedirectToAction("Index", "Home");
                 }
             }
             else
@@ -171,7 +182,7 @@ namespace WebPromotion.Controllers
                     Type = "failed"
                 });
 
-                return RedirectToAction("Index");
+                return RedirectToAction("Index", "Home");
             }
         }
 
@@ -182,6 +193,7 @@ namespace WebPromotion.Controllers
             Console.WriteLine($"Received model: {JsonSerializer.Serialize(model)}");
 
             Console.WriteLine($"DealerCarUnitId: {ModelState.IsValid}");
+
 
             if (ModelState.IsValid)
             {
@@ -194,7 +206,7 @@ namespace WebPromotion.Controllers
                         LastName = model.LastName,
                         Email = model.Email,
                         PhoneNumber = model.PhoneNumber,
-                        AppointmentDate = model.AppointmentDate,
+                        AppointmentDate = model.ConsultDate,
                         Note = model.Note,
                         DealerId = model.DealerId,
                         DealerCarUnitId = int.Parse(getDealerCarUnit[1].Trim()),
@@ -251,6 +263,14 @@ namespace WebPromotion.Controllers
             }
         }   
 
+        [HttpPost]
+        public async Task<IActionResult> Logout()
+        {
+            HttpContext.Response.Cookies.Delete("MyJwtCookie");
+            HttpContext.Response.Cookies.Delete(".AspNetCore.Antiforgery.YZxJgg4YA_s");
+            return RedirectToAction("Index", "Login");
+        }
+
         public IActionResult Privacy()
         {
             return View();
@@ -261,5 +281,20 @@ namespace WebPromotion.Controllers
         {
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
+
+        // [HttpGet]
+        // public IActionResult GetCarUnitSelect(int dealerId)
+        // {
+        //     var carUnits = _dealerCarBusiness.GetOptionsDealerCarUnitByStatus("TestDrive")
+        //         ?.SelectMany(list => list.SelectMany(opt => opt.Cars))
+        //         .Where(x => x.DealerCarUnitId == dealerId)
+        //         .Select(x => new SelectListItem
+        //         {
+        //             Value = $"{x.CarId} - {x.DealerCarUnitId}",
+        //             Text = x.CarName
+        //         }).ToList();
+
+        //     return PartialView("_CarUnitSelect", carUnits);
+        // }
     }
 }

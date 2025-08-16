@@ -4,7 +4,6 @@ using System;
 using System.Collections.Generic;
 
 namespace WebPromotion.Models;
-
 public partial class DealerCar
 {
     public int DealerCarId { get; set; }

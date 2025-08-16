@@ -50,5 +50,18 @@ namespace WebPromotion.Business
                 // Log the exception (not implemented here)
             }
         }
+
+        public async Task<string> LogoutBusiness()
+        {
+            try
+            {
+                return await _accountServices.LogoutAsync();
+            }
+            catch (Exception ex)
+            {
+                // Log the exception (not implemented here)
+                throw new Exception("Logout failed", ex);
+            }
+        }
     }
 }

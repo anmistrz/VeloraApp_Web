@@ -12,11 +12,11 @@ namespace DealerApi.API2.Controllers
     [Route("api/[controller]")]
     public class DealerCarUnitController : ControllerBase
     {
-        private readonly IDealerCarUnitServices _dealerCarUnitDAL;
+        private readonly IDealerCarUnitBL _dealerCarUnitBL;
 
-        public DealerCarUnitController(IDealerCarUnitServices dealerCarUnitDAL)
+        public DealerCarUnitController(IDealerCarUnitBL dealerCarUnitBL)
         {
-            _dealerCarUnitDAL = dealerCarUnitDAL;
+            _dealerCarUnitBL = dealerCarUnitBL;
         }
 
         [HttpPost]
@@ -27,14 +27,14 @@ namespace DealerApi.API2.Controllers
                 return BadRequest("Invalid dealer car unit data.");
             }
 
-            var createdUnit = await _dealerCarUnitDAL.CreateDealerCarUnit(dealerCarUnit);
+            var createdUnit = await _dealerCarUnitBL.CreateDealerCarUnit(dealerCarUnit);
             return CreatedAtAction(nameof(GetDealerCarUnitById), new { id = createdUnit.DealerCarUnitId }, createdUnit);
         }
 
         [HttpGet("{id}")]
         public async Task<IActionResult> GetDealerCarUnitById(int id)
         {
-            var dealerCarUnit = await _dealerCarUnitDAL.GetDealerCarUnitById(id);
+            var dealerCarUnit = await _dealerCarUnitBL.GetDealerCarUnitById(id);
             if (dealerCarUnit == null)
             {
                 return NotFound();
@@ -50,7 +50,7 @@ namespace DealerApi.API2.Controllers
                 return BadRequest("ID mismatch.");
             }
 
-            var updatedUnit = await _dealerCarUnitDAL.UpdateDealerCarUnit(dealerCarUnit);
+            var updatedUnit = await _dealerCarUnitBL.UpdateDealerCarUnit(dealerCarUnit);
             if (updatedUnit == null)
             {
                 return NotFound();
@@ -61,7 +61,7 @@ namespace DealerApi.API2.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteDealerCarUnit(int id)
         {
-            var result = await _dealerCarUnitDAL.DeleteDealerCarUnit(id);
+            var result = await _dealerCarUnitBL.DeleteDealerCarUnit(id);
             if (!result)
             {
                 return NotFound();
@@ -72,7 +72,7 @@ namespace DealerApi.API2.Controllers
         [HttpDelete("DeleteWithConsultHistory/{id}")]
         public async Task<IActionResult> DeleteDealerCarUnitWithConsultHistory(int id)
         {
-            var result = await _dealerCarUnitDAL.DeleteDealerCarUnitWithConsultHistory(id);
+            var result = await _dealerCarUnitBL.DeleteDealerCarUnitWithConsultHistory(id);
             if (result == 0)
             {
                 return NotFound();

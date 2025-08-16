@@ -13,11 +13,11 @@ namespace DealerApi.API2.Controllers
     [Route("api/[controller]")]
     public class NotificationController : ControllerBase
     {
-        private readonly INotificationServices _notificationServices;
+        private readonly INotificationBL _notificationBL;
 
-        public NotificationController(INotificationServices notificationServices)
+        public NotificationController(INotificationBL notificationBL)
         {
-            _notificationServices = notificationServices;
+            _notificationBL = notificationBL;
         }
 
         [HttpGet]
@@ -27,7 +27,7 @@ namespace DealerApi.API2.Controllers
         {
             try
             {
-                var notifications = _notificationServices.GetLimitNotification(limit, customId);
+                var notifications = _notificationBL.GetLimitNotification(limit, customId);
                 Console.WriteLine($"Fetched {notifications.Count()} notifications with limitController {limit}");
                 return Ok(notifications);
             }
@@ -40,12 +40,12 @@ namespace DealerApi.API2.Controllers
 
         [HttpGet]
         [Authorize(Roles = "salesPerson")]
-        [Route("GetNotificationById/{id}")]
-        public IActionResult GetNotificationById(int id)
+        [Route("GetNotificationById/{id}/{notificationType}")]
+        public IActionResult GetNotificationById(int id, string notificationType)
         {
             try
             {
-                var notification = _notificationServices.GetNotificationById(id);
+                var notification = _notificationBL.GetNotificationById(id, notificationType);
                 if (notification != null)
                 {
                     return Ok(notification);
@@ -67,7 +67,7 @@ namespace DealerApi.API2.Controllers
         {
             try
             {
-                var notifications = _notificationServices.GetAllNotifications();
+                var notifications = _notificationBL.GetAllNotifications();
                 return Ok(notifications);
             }
             catch (Exception ex)
@@ -85,7 +85,7 @@ namespace DealerApi.API2.Controllers
         {
             try
             {
-                var notifications = _notificationServices.GetUnreadNotifications(customId);
+                var notifications = _notificationBL.GetUnreadNotifications(customId);
                 return Ok(notifications);
             }
             catch (Exception ex)
@@ -103,7 +103,7 @@ namespace DealerApi.API2.Controllers
         {
             try
             {
-                var notifications = _notificationServices.GetNotificationsBySearch(searchTerm, customId);
+                var notifications = _notificationBL.GetNotificationsBySearch(searchTerm, customId);
                 return Ok(notifications);
             }
             catch (Exception ex)
@@ -121,7 +121,7 @@ namespace DealerApi.API2.Controllers
         public IActionResult UpdateReadNotificationStatus(int id, [FromBody] bool isRead)
         {
 
-            var updatedNotification = _notificationServices.UpdateReadNotificationStatus(id, isRead);
+            var updatedNotification = _notificationBL.UpdateReadNotificationStatus(id, isRead);
             if (updatedNotification == null)
             {
                 return NotFound();
@@ -132,10 +132,10 @@ namespace DealerApi.API2.Controllers
 
         [HttpPut]
         [Authorize(Roles = "salesPerson")]
-        [Route("UpdateRead-and-NotificationType")]
-        public IActionResult UpdateReadAndNotificationType([FromBody] NotificationDTO notification)
+        [Route("UpdateRead-and-NotificationType/{salesPersonId}")]
+        public IActionResult UpdateReadAndNotificationType(int salesPersonId, [FromBody] NotificationDTO notification)
         {
-            var updatedNotification = _notificationServices.UpdateReadAndNotificationType(notification);
+            var updatedNotification = _notificationBL.UpdateReadAndNotificationType(notification, salesPersonId);
             if (updatedNotification == null)
             {
                 return NotFound();

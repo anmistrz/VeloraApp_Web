@@ -9,5 +9,6 @@ namespace WebPromotion.Services.DTO
     {
         public int DealerID { get; set; }
         public string DealerName { get; set; }
+        public int DealerCarUnitId { get; set; }
     }
 }
