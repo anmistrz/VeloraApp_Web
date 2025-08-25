@@ -67,19 +67,12 @@ public partial class DealerRndDBContext : IdentityDbContext
 
     public virtual DbSet<WarrantyRegistration> WarrantyRegistrations { get; set; }
 
-    // protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-    // {
-    //     if (!optionsBuilder.IsConfigured)
-    //     {
-    //         optionsBuilder.UseSqlServer("Data Source=localhost;Initial Catalog=DealerRndDBMigrate;User ID=sa;Password=Alikompang123#;Trust Server Certificate=True");
-    //     }
-    // }
     
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
         if (!optionsBuilder.IsConfigured)
         {
-            optionsBuilder.UseSqlServer("Data Source=ANMISTRZ\\SQLEXPRESS;Initial Catalog=DealerRndDBMigrate;User ID=localhost;Password=anas123;Encrypt=True;Trust Server Certificate=True");
+            optionsBuilder.UseSqlServer("Data Source='yourDataSource';Initial Catalog=DealerRndDBMigrate;User ID=localhost;Password='yourPassword';Encrypt=True;Trust Server Certificate=True");
         }
     }
 
