@@ -63,6 +63,9 @@ public static class ServiceExtensions
         services.AddScoped<IDealerCarUnitBL, DealerCarUnitBL>();
         services.AddScoped<IEmailNotificationBL, EmailNotificationBL>();
         services.AddScoped<ISalesActivityLogBL, SalesActivityBL>();
+        services.AddScoped<ICustomerRatingBL, CustomerRatingBL>();
+        services.AddScoped<IDashboardSalesPersonBL, DashboardSalesPersonBL>();
+        services.AddScoped<ICarSimulationBL, SimulationCreditBL>();
         // Add other services as needed
 
         // Removed recursive call to AddApplicationServices()

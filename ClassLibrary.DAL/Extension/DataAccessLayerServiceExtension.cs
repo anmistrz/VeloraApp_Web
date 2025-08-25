@@ -43,6 +43,9 @@ namespace DealerApi.DAL.Extension
             services.AddScoped<IDealerCarUnit, DealerCarUnitDAL>();
             services.AddScoped<IEmailNotification, EmailNotificationDAL>();
             services.AddScoped<ISalesActivityLog, SalesActivityDAL>();
+            services.AddScoped<ICustomerRating, CustomerRatingDAL>();
+            services.AddScoped<IDashboardSalesPerson, DashboardSalesPersonDAL>();
+            services.AddScoped<ISimulationCredit>(provider => new SimulationCreditDAL(configuration.GetConnectionString("DealerRndDBConnectionString")));
             // Add other services as needed
 
             return services;

@@ -32,13 +32,8 @@ namespace DealerApi.DAL.DAL
         {
             using (var transaction = await _context.Database.BeginTransactionAsync())
             {
-                Console.WriteLine($"TestDriveDAL: Processing request for {dataCustomer.Email}");
                 var validateCustomer = _context.Customers
                     .FirstOrDefault(c => c.Email == dataCustomer.Email && c.IsGuest);
-
-                Console.WriteLine($"TestDriveDAL: Validating customer: {dataCustomer.Email}");
-                Console.WriteLine($"TestDriveDAL: Found customer: {validateCustomer?.Email}");
-                Console.WriteLine($"TestDriveDAL: Customer details: {validateCustomer?.CustomerId}, {validateCustomer?.FirstName}, {validateCustomer?.LastName}");
 
                 if (validateCustomer == null)
                 {
@@ -52,14 +47,11 @@ namespace DealerApi.DAL.DAL
                         IsGuest = true
                     };
 
-                    Console.WriteLine($"Customer created: {customer.FirstName} {customer.LastName} - {customer.Email}");
-
                     _context.Customers.Add(customer);
                     await _context.SaveChangesAsync();
 
                     var findCustomer = await _context.Customers
                         .FirstOrDefaultAsync(c => c.Email == dataCustomer.Email);
-                    Console.WriteLine($"TestDriveDAL: Found customer: {findCustomer?.Email}");
 
                     if (findCustomer == null)
                     {
@@ -67,8 +59,6 @@ namespace DealerApi.DAL.DAL
                     }
                     dataCustomer.CustomerId = findCustomer.CustomerId;
                 }
-
-                Console.WriteLine($"Appointment Date: {testDrive.AppointmentDate}");
 
                 var dtTestDrive = new TestDrive
                 {
@@ -78,8 +68,6 @@ namespace DealerApi.DAL.DAL
                     Note = testDrive.Note,
                     AppointmentDate = testDrive.AppointmentDate
                 };
-
-                Console.WriteLine($"Creating TestDrive: {dtTestDrive.DealerCarUnitId}, CustomerId: {dtTestDrive.CustomerId}, Status: {dtTestDrive.Status}");
 
                 _context.TestDrives.Add(dtTestDrive);
                 await _context.SaveChangesAsync(); 
@@ -162,9 +150,6 @@ namespace DealerApi.DAL.DAL
                         await _context.SaveChangesAsync();
                     }
 
-                    
-                    Console.WriteLine($"Test drive with ID {testDriveId} has been canceled and related notification removed.");
-                    Console.WriteLine($"Customer ID: {testDrive.CustomerId}"); 
                     var dataForBodyEmail = await _context.Notifications
                         .Where(n => n.TestDriveId == testDriveId)
                         .Join(_context.Customers,
@@ -230,6 +215,7 @@ namespace DealerApi.DAL.DAL
             {
                 using (var transaction = await _context.Database.BeginTransactionAsync())
                 {
+                    Console.WriteLine($"Deleting test drive before handled with ID: {testDriveId}, SalesPersonId: {salesPersonId}, DealerId: {dealerId}, Reason: {reason}");
                     var testDrive = await _context.TestDrives.FindAsync(testDriveId);
                     if (testDrive == null)
                     {
@@ -239,6 +225,18 @@ namespace DealerApi.DAL.DAL
                     testDrive.Status = "Canceled";
                     _context.TestDrives.Update(testDrive);
                     await _context.SaveChangesAsync();
+
+                    var dataForBodyEmail = await _context.Notifications
+                    .Where(n => n.TestDriveId == testDriveId && n.CustomerId == testDrive.CustomerId)
+                    .Join(_context.Customers,
+                        n => n.CustomerId,
+                        c => c.CustomerId,
+                        (n, c) => new
+                        {
+                            CustomerName = $"{c.FirstName} {c.LastName}",
+                            CustomerEmail = c.Email
+                        })
+                    .FirstOrDefaultAsync();
 
                     var notifications = _context.Notifications
                         .Where(n => n.TestDriveId == testDriveId && n.CustomerId == testDrive.CustomerId)
@@ -266,38 +264,31 @@ namespace DealerApi.DAL.DAL
                     _context.SalesActivityLogs.Add(salesActivity);
                     await _context.SaveChangesAsync();
 
-                    
-                    var dataForBodyEmail = await _context.Notifications
-                        .Where(n => n.ConsultHistoryId == testDriveId && n.CustomerId == testDrive.CustomerId)
-                        .Join(_context.Customers,
-                            n => n.CustomerId,
-                            c => c.CustomerId,
-                            (n, c) => new
-                            {
-                                CustomerName = $"{c.FirstName} {c.LastName}",
-                                CustomerEmail = c.Email
-                            })
-                        .FirstOrDefaultAsync();
 
-                    if (dataForBodyEmail == null)
-                    {
-                        throw new Exception("No notification found for the consult history.");
-                    }
+                    // if (dataForBodyEmail == null)
+                    // {
+                    //     throw new Exception("No notification found for the consult history.");
+                    // }
 
                     var reqEmail = new EmailNotification
                     {
                         ToEmail = dataForBodyEmail.CustomerEmail,
-                        Subject = "Test Drive Request Canceled",
+                        Subject = "Test Drive Request Rejected",
                         Body = $"<div style='font-family: Arial, sans-serif;'>" +
                                 $"<h2>Dear {dataForBodyEmail.CustomerName},</h2>" +
-                                $"<p>Your Test Drive has been Canceled.</p>" +
+                                $"<p>Your Test Drive has been Rejected.</p>" +
+                                $"<p>Reason: {reason}</p>" +
                                 $"<p>Thank you for choosing our service!</p>" +
                                 $"<p style='margin-bottom: 20px;'>If you have any questions, feel free to reach out to us.</p>" +
                                 $"<p>Best regards,<br />The Velora Team</p>" +
                                 $"</div>"
                     };
-                    await _emailNotification.SendEmailAsync(reqEmail.ToEmail, reqEmail.Subject, reqEmail.Body);
+                    if (reqEmail.ToEmail != null)
+                    {
+                         await _emailNotification.SendEmailAsync(reqEmail.ToEmail, reqEmail.Subject, reqEmail.Body);
 
+                    }
+                   
                     await transaction.CommitAsync();
                 }
 

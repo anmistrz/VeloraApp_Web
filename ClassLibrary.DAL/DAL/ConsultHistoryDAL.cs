@@ -136,91 +136,67 @@ namespace DealerApi.DAL.DAL
         {
             try
             {
-                using (var transaction = _context.Database.BeginTransaction())
+                using (var transaction = await _context.Database.BeginTransactionAsync())
                 {
-                    var consultHistory = _context.ConsultHistories.Find(consultHistoryId);
+                    var consultHistory = await _context.ConsultHistories.FindAsync(consultHistoryId);
                     if (consultHistory == null)
                     {
                         Console.WriteLine($"[WARN] Consult history not found for ID: {consultHistoryId}");
                         return false;
                     }
 
-                    Console.WriteLine($"Deleting consult history with ID: {consultHistoryId}, Reason: {reason}");
+                    var dataForBodyEmail = await _context.Notifications
+                    .Where(n => n.ConsultHistoryId == consultHistoryId)
+                    .Join(_context.Customers,
+                        n => n.CustomerId,
+                        c => c.CustomerId,
+                        (n, c) => new
+                        {
+                            CustomerName = $"{c.FirstName} {c.LastName}",
+                            CustomerEmail = c.Email
+                        })
+                    .FirstOrDefaultAsync();
 
                     var getNotificationsById = await _context.Notifications
                         .Where(n => n.ConsultHistoryId == consultHistoryId && n.CustomerId == consultHistory.CustomerId)
-                        .ToListAsync();
+                        .FirstOrDefaultAsync();
 
-                    if (getNotificationsById.Count == 0)
+                    if (getNotificationsById == null)
                     {
                         Console.WriteLine($"[WARN] No notifications found for the consult history ID: {consultHistoryId}");
                     }
-                    else
-                    {
-                        Console.WriteLine($"Found {getNotificationsById.Count} notifications for consult history ID: {consultHistoryId}");
-                        foreach (var notification in getNotificationsById)
-                        {
-                            try
-                            {
-                                var relatedSalesActivities = _context.SalesActivityLogs.Where(s => s.NotificationId == notification.NotificationId).ToList();
-                                if (relatedSalesActivities.Count == 0)
-                                {
-                                    Console.WriteLine($"[INFO] No SalesActivityLog records reference NotificationId {notification.NotificationId}");
-                                }
-                                foreach (var activity in relatedSalesActivities)
-                                {
-                                    Console.WriteLine($"[INFO] Setting NotificationId to NULL for SalesActivityLog.ActivityLogId={activity.ActivityLogId}");
-                                    activity.NotificationId = null;
-                                    _context.SalesActivityLogs.Update(activity);
-                                }
-                                await _context.SaveChangesAsync();
-                                _context.Notifications.Remove(notification);
-                                Console.WriteLine($"[INFO] Deleted NotificationId {notification.NotificationId}");
-                            }
-                            catch (Exception ex)
-                            {
-                                Console.WriteLine($"[ERROR] Failed to update SalesActivityLog or delete NotificationId {notification.NotificationId}: {ex.Message}\n{ex.StackTrace}");
-                                throw;
-                            }
-                        }
-                        await _context.SaveChangesAsync();
-                    }
 
-                    var salesActivity = _context.SalesActivityLogs
+                    var relatedSalesActivities = await _context.SalesActivityLogs
                         .Where(s => s.ConsultationId == consultHistoryId)
-                        .FirstOrDefault();
-                    if (salesActivity == null)
+                        .FirstOrDefaultAsync();
+
+                    if (relatedSalesActivities == null)
                     {
-                        Console.WriteLine($"[WARN] No sales activity found for the consult history ID: {consultHistoryId}");
+                        Console.WriteLine($"[WARN] No sales activities found for the consult history ID: {consultHistoryId}");
                     }
                     else
                     {
                         Console.WriteLine($"Deleting sales activity for consult history ID: {consultHistoryId}");
-                        salesActivity.Details = reason;
-                        salesActivity.ActivityType = "ConsultationCanceled";
-                        _context.SalesActivityLogs.Update(salesActivity);
+                        relatedSalesActivities.NotificationId = null;
+                        relatedSalesActivities.Details = reason;
+                        relatedSalesActivities.ActivityType = "ConsultationCanceled";
+                        _context.SalesActivityLogs.Update(relatedSalesActivities);
                         await _context.SaveChangesAsync();
                     }
+
+                    _context.Notifications.Remove(getNotificationsById);
+                    await _context.SaveChangesAsync();
+                    Console.WriteLine($"Found {getNotificationsById} notifications for consult history ID: {consultHistoryId}");
+
 
                     consultHistory.StatusConsultation = "Canceled";
                     _context.ConsultHistories.Update(consultHistory);
                     await _context.SaveChangesAsync();
 
-                    var dataForBodyEmail = await _context.Notifications
-                        .Where(n => n.ConsultHistoryId == consultHistoryId)
-                        .Join(_context.Customers,
-                            n => n.CustomerId,
-                            c => c.CustomerId,
-                            (n, c) => new
-                            {
-                                CustomerName = $"{c.FirstName} {c.LastName}",
-                                CustomerEmail = c.Email
-                            })
-                        .FirstOrDefaultAsync();
 
-                    if (dataForBodyEmail == null)
+                    if (dataForBodyEmail == null || string.IsNullOrEmpty(dataForBodyEmail.CustomerEmail))
                     {
-                        Console.WriteLine($"[WARN] No notification found for the consult history ID: {consultHistoryId} for email sending.");
+                        Console.WriteLine($"[WARN] No notification found for the consult history ID: {consultHistoryId} for email sending or email is empty.");
                     }
                     else
                     {
@@ -237,10 +213,10 @@ namespace DealerApi.DAL.DAL
                                     $"</div>"
                         };
                         await _emailNotification.SendEmailAsync(reqEmail.ToEmail, reqEmail.Subject, reqEmail.Body);
-                        await _context.SaveChangesAsync();
                     }
+                    await _context.SaveChangesAsync();
 
-                    transaction.Commit();
+                    await transaction.CommitAsync();
                     return true;
                 }
             }
@@ -277,6 +253,18 @@ namespace DealerApi.DAL.DAL
                     _context.SalesActivityLogs.Add(salesActivity);
                     await _context.SaveChangesAsync();
 
+                    var dataForBodyEmail = await _context.Notifications
+                    .Where(n => n.ConsultHistoryId == consultHistoryId)
+                    .Join(_context.Customers,
+                        n => n.CustomerId,
+                        c => c.CustomerId,
+                        (n, c) => new
+                        {
+                            CustomerName = $"{c.FirstName} {c.LastName}",
+                            CustomerEmail = c.Email
+                        })
+                    .FirstOrDefaultAsync();
+
                     var notification = await _context.Notifications
                         .Where(n => n.ConsultHistoryId == consultHistoryId)
                         .FirstOrDefaultAsync();
@@ -287,31 +275,25 @@ namespace DealerApi.DAL.DAL
                         await _context.SaveChangesAsync();
                     }
 
-                        var dataForBodyEmail = await _context.Notifications
-                        .Where(n => n.ConsultHistoryId == consultHistoryId)
-                        .Join(_context.Customers,
-                            n => n.CustomerId,
-                            c => c.CustomerId,
-                            (n, c) => new
-                            {
-                                CustomerName = $"{c.FirstName} {c.LastName}",
-                                CustomerEmail = c.Email
-                            })
-                        .FirstOrDefaultAsync();
-
                     var reqEmail = new EmailNotification
                     {
                         ToEmail = dataForBodyEmail.CustomerEmail,
-                        Subject = "Consultation Request Canceled",
+                        Subject = "Consultation Request Rejected",
                         Body = $"<div style='font-family: Arial, sans-serif;'>" +
                                 $"<h2>Dear {dataForBodyEmail.CustomerName},</h2>" +
-                                $"<p>Your Consultation has been Canceled.</p>" +
+                                $"<p>Your Consultation has been Rejected.</p>" +
+                                $"<p>Reason: {reason}</p>" +
                                 $"<p>Thank you for choosing our service!</p>" +
                                 $"<p style='margin-bottom: 20px;'>If you have any questions, feel free to reach out to us.</p>" +
                                 $"<p>Best regards,<br />The Velora Team</p>" +
                                 $"</div>"
                     };
-                    await _emailNotification.SendEmailAsync(reqEmail.ToEmail, reqEmail.Subject, reqEmail.Body);
+
+                    if (dataForBodyEmail != null)
+                    {
+                        await _emailNotification.SendEmailAsync(reqEmail.ToEmail, reqEmail.Subject, reqEmail.Body);
+                    }
+                    
                     await _context.SaveChangesAsync();
 
                     transaction.Commit();

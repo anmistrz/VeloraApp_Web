@@ -9,6 +9,6 @@ namespace ClassLibrary.DAL.Interfaces
 {
     public interface ICar : ICrud<Car>
     {
-        
+        public Task<List<(Car, Dealer, DealerCar, int totalCount)>> GetMostTestDriveCarsWithDealersAsync(int top);
     }
 }

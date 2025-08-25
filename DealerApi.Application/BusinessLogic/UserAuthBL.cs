@@ -1,6 +1,7 @@
 using System;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
+using System.Text.Json;
 using ClassLibrary.DAL.Interfaces;
 using DealerApi.Application.DTO;
 using DealerApi.Application.Helpers;
@@ -66,6 +67,18 @@ public class UserAuthBL: IUserAuthBL
         }
     }
 
+    public async Task<bool> DeleteRoleInUserAsync(string email, string roleName)
+    {
+        try
+        {
+            return await _userAuthDAL.DeleteRoleInUserAsync(email, roleName);
+        }
+        catch( Exception ex)
+        {
+            throw new InvalidOperationException($"Error deleting role in user: {ex.Message}", ex);
+        }
+    }
+
     public async Task<List<string>> GetRolesByUserAsync(string email)
     {
         try
@@ -94,6 +107,7 @@ public class UserAuthBL: IUserAuthBL
 
             var user = await _userAuthDAL.LoginAsync(loginDTO.Email, loginDTO.Password);
             var userPersons = await _salesPersonDAL.GetSalesPersonByEmailAsync(loginDTO.Email);
+            Console.WriteLine($"User found: {user.Email}, SalesPersonId: {JsonSerializer.Serialize(userPersons)}");
             if (user == null)
             {
                 throw new InvalidOperationException("Invalid login credentials.");
@@ -101,6 +115,7 @@ public class UserAuthBL: IUserAuthBL
 
             // Get the first SalesPerson from the collection (if any)
             var userPerson = userPersons?.FirstOrDefault();
+            Console.WriteLine($"User found: {user.Email}, SalesPersonId: {userPerson}");
             var dealerId = userPerson != null ? userPerson.DealerId.ToString() : string.Empty;
 
             //List Claim
@@ -166,7 +181,12 @@ public class UserAuthBL: IUserAuthBL
                 throw new ArgumentException("Password cannot be null or empty", nameof(registrationDTO.Password));
             }
 
-            return _userAuthDAL.RegisterAsync(registrationDTO.UserName, registrationDTO.Email, registrationDTO.Password);
+            return _userAuthDAL.RegisterAsync(
+                registrationDTO.FirstName,
+                registrationDTO.LastName,
+                registrationDTO.UserName,
+                registrationDTO.Email, registrationDTO.Password
+                );
         }
         catch (Exception ex)
         {

@@ -31,5 +31,37 @@ namespace DealerApi.API.Controllers
                 return StatusCode(500, $"Internal server error: {ex.Message}");
             }
         }
+
+        [HttpGet]
+        [Route("GetSelectListDealerItems")]
+        public async Task<IActionResult> GetSelectListDealerItems()
+        {
+            try
+            {
+                var selectListItems = await _dealerBL.GetSelectListDealerItems();
+                return Ok(selectListItems);
+            }
+            catch (Exception ex)
+            {
+                // Log the exception as needed
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
+        }
+
+        [HttpGet]
+        [Route("GetListMostDealer")]
+        public async Task<IActionResult> GetListMostDealer(int top)
+        {
+            try
+            {
+                var mostDealers = await _dealerBL.GetListMostDealerAsync(top);
+                return Ok(mostDealers);
+            }
+            catch (Exception ex)
+            {
+                // Log the exception as needed
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
+        }
     }
 }

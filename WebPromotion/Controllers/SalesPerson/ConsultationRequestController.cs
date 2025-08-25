@@ -32,11 +32,13 @@ namespace WebPromotion.Controllers
         [HttpGet]
         public async Task<IActionResult> Index()
         {
-            var salesPersonId = ViewBag.SalesPersonId;
+            var salesPersonIdObj = ViewBag.SalesPersonId;
+            // normalize to string because business method expects string
+            var salesPersonId = salesPersonIdObj?.ToString();
             Console.WriteLine($"SalesPersonId: {salesPersonId}");
-            if (salesPersonId == null)
+            if (string.IsNullOrWhiteSpace(salesPersonId))
             {
-                _logger.LogError("SalesPersonId is null.");
+                _logger.LogError("SalesPersonId is null or empty.");
                 return NotFound("SalesPersonId is not provided.");
             }
 
@@ -75,7 +77,12 @@ namespace WebPromotion.Controllers
             }
 
             var dataTableConsultation = await _consultationBusiness.GetConsultHistoryRequestBySalesPerson(salesPersonId);
-            return View(dataTableConsultation);
+            var list = dataTableConsultation as IEnumerable<ConsultHistoryRequestClientDTO>;
+            if (list == null || !list.Any())
+            {
+                return View(new List<ConsultHistoryRequestClientDTO>());
+            }
+            return View(list);
         }
 
     [HttpPost("delete-after-handled")]
@@ -100,6 +107,59 @@ namespace WebPromotion.Controllers
                 };
                 _logger.LogInformation($"Deleting consult history with ID: {id}, SalesPersonId: {salesPersonId}, DealerId: {DealerId}");
                 var result = await _consultationBusiness.DeleteConsultHistoryAfterHandled(id, dataBody);
+                if (!result)
+                {
+                    TempData["ErrorModal"] = JsonSerializer.Serialize(new ModalViewModels
+                    {
+                        Title = "Error",
+                        Message = "Failed to delete consult history.",
+                        ButtonText = "OK",
+                        IsVisible = true,
+                        Type = "error"
+                    });
+                    return RedirectToAction("Index");
+                }
+
+                TempData["SuccessModal"] = JsonSerializer.Serialize(new ModalViewModels
+                {
+                    Title = "Success",
+                    Message = "Consult history deleted successfully.",
+                    ButtonText = "OK",
+                    IsVisible = true,
+                    Type = "success"
+                });
+                return RedirectToAction("Index");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error deleting consult history");
+                throw new Exception("An error occurred while deleting the consult history.", ex);
+            }
+        }
+
+        [HttpPost]
+        [Route("delete-before-handled")]
+        public async Task<IActionResult> DeleteBeforeHandled([FromForm] int id, [FromForm] string Reason)
+        {
+            try
+            {
+                if (id <= 0)
+                {
+                    _logger.LogError("Invalid ConsultHistoryId: {Id}", id);
+                    return BadRequest("Invalid ConsultHistoryId.");
+                }
+
+                var salesPersonId = Convert.ToInt32(ViewBag.SalesPersonId);
+                var DealerId = Convert.ToInt32(ViewBag.DealerId);
+                var dataBody = new DeleteConsultRequestClientDTO
+                {
+                    ConsultHistoryId = id,
+                    SalesPersonId = salesPersonId,
+                    DealerId = DealerId,
+                    Reason = Reason
+                };
+                _logger.LogInformation($"Deleting consult history with ID: {id}, SalesPersonId: {salesPersonId}, DealerId: {DealerId}");
+                var result = await _consultationBusiness.DeleteConsultHistoryBeforeHandled(id, dataBody);
                 if (!result)
                 {
                     TempData["ErrorModal"] = JsonSerializer.Serialize(new ModalViewModels

@@ -7,7 +7,13 @@
     else
     {
         var userRole = ViewBag.UserRole as string;
-        Console.WriteLine("userRoleeee", userRole);
-        Layout = userRole == "salesPerson" ? "_LayoutSalesPerson" : "_Layout";
+        if (userRole == "salesPerson")
+        {
+            Layout = "_LayoutSalesPerson";
+        }
+        else
+        {
+            Layout = "_Layout";
+        }
     }
 }

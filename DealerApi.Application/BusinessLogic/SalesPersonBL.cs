@@ -52,7 +52,7 @@ namespace DealerApi.Application.BusinessLogic
             catch (Exception ex)
             {
                 // Log the exception
-                throw new Exception("Error creating sales person", ex);
+                throw new InvalidOperationException("Error creating sales person", ex);
             }
         }
 
@@ -65,7 +65,7 @@ namespace DealerApi.Application.BusinessLogic
             catch (Exception ex)
             {
                 // Log the exception
-                throw new Exception("Error deleting sales person", ex);
+                throw new InvalidOperationException("Error deleting sales person", ex);
             }
 
         }
@@ -97,7 +97,7 @@ namespace DealerApi.Application.BusinessLogic
             catch (Exception ex)
             {
                 // Log the exception
-                throw new Exception("Error retrieving all sales persons", ex);
+                throw new InvalidOperationException("Error retrieving all sales persons", ex);
             }
         }
 
@@ -129,7 +129,7 @@ namespace DealerApi.Application.BusinessLogic
             catch (Exception ex)
             {
                 // Log the exception
-                throw new Exception("Error retrieving sales person by ID", ex);
+                throw new InvalidOperationException("Error retrieving sales person by ID", ex);
             }
         }
 
@@ -162,7 +162,7 @@ namespace DealerApi.Application.BusinessLogic
             catch (Exception ex)
             {
                 // Log the exception
-                throw new Exception("Error retrieving sales persons by dealer ID", ex);
+                throw new InvalidOperationException("Error retrieving sales persons by dealer ID", ex);
             }
         }
 
@@ -204,7 +204,7 @@ namespace DealerApi.Application.BusinessLogic
             catch (Exception ex)
             {
                 // Log the exception
-                throw new Exception("Error updating sales person", ex);
+                throw new InvalidOperationException("Error updating sales person", ex);
             }
         }
     
@@ -237,7 +237,7 @@ namespace DealerApi.Application.BusinessLogic
             catch (Exception ex)
             {
                 // Log the exception
-                throw new Exception("Error retrieving sales person by email", ex);
+                throw new InvalidOperationException("Error retrieving sales person by email", ex);
             }
         }
     }

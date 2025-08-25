@@ -23,9 +23,14 @@ namespace WebPromotion.ViewComponents
         {
             // ambil path page
             var path = ViewContext.HttpContext.Request.Path;
+
             if (path.ToString().StartsWith("/SalesPerson"))
             {
-                var dealerId = ViewBag.DealerId != null ? Convert.ToInt32(ViewBag.DealerId) : 0;
+                var dealerId = 0;
+                if (ViewBag.DealerId != null && !string.IsNullOrWhiteSpace(ViewBag.DealerId.ToString()))
+                {
+                    dealerId = Convert.ToInt32(ViewBag.DealerId);
+                }
                 Console.WriteLine($"NotificationViewComponent: Fetching notifications for dealer {ViewBag.DealerId}");
                 var notifications = await _notificationBusiness.GetUnreadNotificationsBusiness(dealerId);
                 return View(notifications);

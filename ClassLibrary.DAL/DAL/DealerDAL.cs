@@ -51,6 +51,63 @@ namespace ClassLibrary.DAL
             throw new NotImplementedException();
         }
 
+        public async Task<IEnumerable<(Dealer,float average)>> GetMostPopularDealersAsync(int top)
+        {
+            try
+            {
+                var result = await _context.Dealers
+                    .Join(_context.CustomerRatings,
+                        dealer => dealer.DealerId,
+                        rating => rating.DealerId,
+                        (dealer, rating) => new { dealer, rating })
+                    .GroupBy(x => new
+                    {
+                        x.dealer.DealerId,
+                        x.dealer.DealerName,
+                        x.dealer.Location,
+                        x.dealer.Province,
+                        x.dealer.City,
+                        x.dealer.Address,
+                        x.dealer.PhoneNumber,
+                    })
+                    .Select(g => new
+                    {
+                        DealerId = g.Key.DealerId,
+                        DealerName = g.Key.DealerName,
+                        Location = g.Key.Location,
+                        Province = g.Key.Province,
+                        City = g.Key.City,
+                        Address = g.Key.Address,
+                        PhoneNumber = g.Key.PhoneNumber,
+                        AverageRating = g.Average(x => x.rating.RatingValue),
+                    })
+                    .OrderByDescending(x => x.AverageRating)
+                    .Take(top)
+                    .AsNoTracking()
+                    .ToListAsync();
+
+                return result.Select(x =>
+                (
+                    new Dealer
+                    {
+                        DealerId = x.DealerId,
+                        DealerName = x.DealerName,
+                        Location = x.Location,
+                        Province = x.Province,
+                        City = x.City,
+                        Address = x.Address,
+                        PhoneNumber = x.PhoneNumber
+                    },
+                    (float)x.AverageRating
+                ));
+            }
+            catch (Exception ex)
+            {
+                // Handle exceptions as needed
+                throw new InvalidOperationException("Error retrieving most popular dealers", ex);
+            }
+        }
+
         public Task<Dealer> UpdateAsync(Dealer entity)
         {
             throw new NotImplementedException();

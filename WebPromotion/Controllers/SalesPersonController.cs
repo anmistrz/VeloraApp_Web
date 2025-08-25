@@ -19,17 +19,19 @@ namespace WebPromotion.Controllers
         private readonly ILogger<SalesPersonController> _logger;
         private readonly INotificationBusiness _notificationServices;
         private readonly IAccountBusiness _accountBusiness;
+        private readonly IDashboardSalesPersonBusiness _dashboardSalesPersonBusiness;
 
-        public SalesPersonController(ILogger<SalesPersonController> logger, INotificationBusiness notificationServices, IAccountBusiness accountBusiness)
+        public SalesPersonController(ILogger<SalesPersonController> logger, INotificationBusiness notificationServices, IAccountBusiness accountBusiness, IDashboardSalesPersonBusiness dashboardSalesPersonBusiness)
         {
             _logger = logger;
             _notificationServices = notificationServices;
             _accountBusiness = accountBusiness;
+            _dashboardSalesPersonBusiness = dashboardSalesPersonBusiness;
         }
 
         [HttpGet]
         [Route("")]
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
             if (TempData["SuccessModal"] != null)
             {
@@ -64,6 +66,48 @@ namespace WebPromotion.Controllers
                     }
                 }
             }
+            // Safely parse SalesPersonId from ViewBag (it may be int, string or null)
+            int salesPersonId = 0;
+            var spIdObj = ViewBag.SalesPersonId;
+            if (spIdObj is int spInt)
+            {
+                salesPersonId = spInt;
+            }
+            else if (spIdObj is string spStr && int.TryParse(spStr, out var spParsed))
+            {
+                salesPersonId = spParsed;
+            }
+            var dataTotalConsultation = await _dashboardSalesPersonBusiness.GetTotalConsultationHandledSalesPersonAsync(salesPersonId);
+            ViewBag.DataTotalConsultation = dataTotalConsultation;
+
+            var dataTotalTestDrive = await _dashboardSalesPersonBusiness.GetTotalTestDriveHandledSalesPersonAsync(salesPersonId);
+            ViewBag.DataTotalTestDrive = dataTotalTestDrive;
+
+            var dataTotalTargetConsultationThisMonth = await _dashboardSalesPersonBusiness.GetTotalTargetConsultationHandledSalesPersonAsync(salesPersonId);
+            ViewBag.DataTotalTargetConsultationThisMonth = dataTotalTargetConsultationThisMonth;
+            var dataTotalTargetTestDriveThisMonth = await _dashboardSalesPersonBusiness.GetTotalTargetTestDriveHandledSalesPersonAsync(salesPersonId);
+            ViewBag.DataTotalTargetTestDriveThisMonth = dataTotalTargetTestDriveThisMonth;
+
+            var dataTotalActivityConsultationByMonth = await _dashboardSalesPersonBusiness.GetTotalSalesActivityConsultationByMonthAsync(salesPersonId);
+            Console.WriteLine($"DataTotalActivityConsultationByMonth: {JsonSerializer.Serialize(dataTotalActivityConsultationByMonth)}");
+            // ensure we have an enumerable to avoid null reference or cast errors
+            var activityConsultationList = (dataTotalActivityConsultationByMonth as IEnumerable<dynamic>) ?? Enumerable.Empty<dynamic>();
+            ViewBag.DataTotalActivityConsultationByMonth = activityConsultationList.ToList();
+            Console.WriteLine($"Unique Months for Activity Consultation: {string.Join(", ", activityConsultationList.Select(x => x.month).Distinct())}");
+
+            var dataTotalActivityTestDriveByMonth = await _dashboardSalesPersonBusiness.GetTotalSalesActivityTestDriveByMonthAsync(salesPersonId);
+            var activityTestDriveList = (dataTotalActivityTestDriveByMonth as IEnumerable<dynamic>) ?? Enumerable.Empty<dynamic>();
+            ViewBag.DataTotalActivityTestDriveByMonth = activityTestDriveList.ToList();
+            Console.WriteLine($"Unique Months for Activity Test Drive: {string.Join(", ", activityTestDriveList.Select(x => x.month).Distinct())}");
+
+            var listDataActivitySalesPerformance = await _dashboardSalesPersonBusiness.GetDetailActivitySalesPerformanceByDayInThisMonthAsync(salesPersonId);
+            ViewBag.ListDataActivitySalesPerformance = (listDataActivitySalesPerformance as IEnumerable<dynamic>) ?? Enumerable.Empty<dynamic>();
+
+            var dataSalesPerformanceReview = await _dashboardSalesPersonBusiness.GetSalesPerformanceReviewAsync(salesPersonId);
+            ViewBag.DataSalesPerformanceReview = dataSalesPerformanceReview;
+
+            var dataSalesAverageRating = await _dashboardSalesPersonBusiness.GetSalesRatingAsync(salesPersonId);
+            ViewBag.DataSalesAverageRating = dataSalesAverageRating;
 
             return View();
         }
@@ -209,6 +253,71 @@ namespace WebPromotion.Controllers
                 return RedirectToAction("ListNotifications");
             }
         }
+
+        // [HttpGet]
+        // [Route("GetSalesPerformanceReview")]
+        // public async Task<IActionResult> GetSalesPerformanceReview(int salesPersonId)
+        // {
+        //     var result = await _dashboardSalesPersonBusiness.GetSalesPerformanceReviewAsync(salesPersonId);
+        //     return Json(result);
+        // }
+
+        // [HttpGet]
+        // [Route("GetSalesRating")]
+        // public async Task<IActionResult> GetSalesRating(int salesPersonId)
+        // {
+        //     var result = await _dashboardSalesPersonBusiness.GetSalesRatingAsync(salesPersonId);
+        //     return Json(result);
+        // }
+
+        // [HttpGet]
+        // [Route("GetTotalConsultationHandledSalesPerson")]
+        // public async Task<IActionResult> GetTotalConsultationHandledSalesPerson(int salesPersonId)
+        // {
+        //     var result = await _dashboardSalesPersonBusiness.GetTotalConsultationHandledSalesPersonAsync(salesPersonId);
+        //     return Json(result);
+        // }
+
+        // [HttpGet]
+        // [Route("GetTotalSalesActivityConsultationByMonth")]
+        // public async Task<IActionResult> GetTotalSalesActivityConsultationByMonth(int salesPersonId)
+        // {
+        //     var result = await _dashboardSalesPersonBusiness.GetTotalSalesActivityConsultationByMonthAsync(salesPersonId);
+        //     return Json(result);
+        // }
+
+        // [HttpGet]
+        // [Route("GetTotalSalesActivityTestDriveByMonth")]
+        // public async Task<IActionResult> GetTotalSalesActivityTestDriveByMonth(int salesPersonId)
+        // {
+        //     var result = await _dashboardSalesPersonBusiness.GetTotalSalesActivityTestDriveByMonthAsync(salesPersonId);
+        //     return Json(result);
+        // }
+
+        // [HttpGet]
+        // [Route("GetTotalTargetConsultationHandledSalesPerson")]
+        // public async Task<IActionResult> GetTotalTargetConsultationHandledSalesPerson(int salesPersonId)
+        // {
+        //     var result = await _dashboardSalesPersonBusiness.GetTotalTargetConsultationHandledSalesPersonAsync(salesPersonId);
+        //     return Json(result);
+        // }
+
+        // [HttpGet]
+        // [Route("GetTotalTargetTestDriveHandledSalesPerson")]
+        // public async Task<IActionResult> GetTotalTargetTestDriveHandledSalesPerson(int salesPersonId)
+        // {
+        //     var result = await _dashboardSalesPersonBusiness.GetTotalTargetTestDriveHandledSalesPersonAsync(salesPersonId);
+        //     return Json(result);
+        // }
+
+        // [HttpGet]
+        // [Route("GetTotalTestDriveHandledSalesPerson")]
+        // public async Task<IActionResult> GetTotalTestDriveHandledSalesPerson(int salesPersonId)
+        // {
+        //     var result = await _dashboardSalesPersonBusiness.GetTotalTestDriveHandledSalesPersonAsync(salesPersonId);
+        //     return Json(result);
+        // }
+
 
         [HttpPost]
         [Route("logout")]

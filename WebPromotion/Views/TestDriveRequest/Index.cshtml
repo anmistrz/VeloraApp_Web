@@ -81,7 +81,7 @@
                                                         <input type="hidden" name="id" value="@item.TestDriveId" />
                                                         <input type="hidden" name="Reason" class="reason-input" value="" />
                                                         <button 
-                                                            type="submit" 
+                                                            type="button" 
                                                             class="btn btn-danger btn-sm btn-round btn-handle-request"
                                                         >
                                                             Delete Request
@@ -92,7 +92,7 @@
                                                 {
                                                     <a 
                                                         type="button" 
-                                                        href="@Url.Action("Edit", "TestDriveRequest", new { id = item.TestDriveId })" 
+                                                        href="@Url.Action("Detail", "TestDriveRequest", new { id = item.TestDriveId })" 
                                                         class="btn btn-primary btn-sm btn-round"
                                                     >
                                                         Details Activity
@@ -136,15 +136,15 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="modalConfirmationLabel">Konfirmasi</h5>
+                <h5 class="modal-title" id="modalConfirmationLabel">Confirmation Test Drive Request Cancellation</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <textarea class="form-control" id="Reason" rows="3" placeholder="Alasan penghapusan..."></textarea>
+                <textarea class="form-control" id="Reason" rows="3" placeholder="Reason for cancellation..."></textarea>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
-                <button type="button" class="btn btn-primary" id="btn-confirm-yes">Ya</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" id="btn-confirm-yes">Yes</button>
             </div>
         </div>
     </div>
