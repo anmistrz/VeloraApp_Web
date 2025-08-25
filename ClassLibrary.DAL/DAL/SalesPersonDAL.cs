@@ -77,14 +77,14 @@ namespace ClassLibrary.DAL.DAL
             }
         }
 
-        public Task<IEnumerable<SalesPerson>> GetSalesPersonByEmailAsync(string email)
+        public async Task<IEnumerable<SalesPerson>> GetSalesPersonByEmailAsync(string email)
         {
             try
             {
                 var salesPerson = _context.SalesPeople
                     .Where(sp => sp.Email == email)
                     .ToList();
-                return Task.FromResult(salesPerson.AsEnumerable());
+                return salesPerson.AsEnumerable();
             }
             catch (Exception ex)
             {

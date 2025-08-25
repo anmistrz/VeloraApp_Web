@@ -511,6 +511,55 @@ namespace DealerApi.DAL.Migrations
                     b.ToTable("CustomerRating", (string)null);
                 });
 
+            modelBuilder.Entity("DealerApi.Entities.Models.CustomerVerified", b =>
+                {
+                    b.Property<int>("CustomerVerifiedId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasColumnName("CustomerVerifiedID");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("CustomerVerifiedId"));
+
+                    b.Property<string>("Address")
+                        .IsUnicode(false)
+                        .HasColumnType("varchar(max)");
+
+                    b.Property<DateTime?>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("(sysutcdatetime())");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .IsUnicode(false)
+                        .HasColumnType("varchar(100)");
+
+                    b.Property<string>("FirstName")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .IsUnicode(false)
+                        .HasColumnType("varchar(20)");
+
+                    b.Property<string>("LastName")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .IsUnicode(false)
+                        .HasColumnType("varchar(20)");
+
+                    b.Property<string>("PhoneNumber")
+                        .HasMaxLength(20)
+                        .IsUnicode(false)
+                        .HasColumnType("varchar(20)");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("CustomerVerifiedId");
+
+                    b.ToTable("CustomerVerifieds");
+                });
+
             modelBuilder.Entity("DealerApi.Entities.Models.Dealer", b =>
                 {
                     b.Property<int>("DealerId")
@@ -836,55 +885,6 @@ namespace DealerApi.DAL.Migrations
                     b.HasIndex("CreditAppId");
 
                     b.ToTable("DocumentCreditApplication", (string)null);
-                });
-
-            modelBuilder.Entity("DealerApi.Entities.Models.Guest", b =>
-                {
-                    b.Property<int>("GuestId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasColumnName("GuestID");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("GuestId"));
-
-                    b.Property<string>("Address")
-                        .IsUnicode(false)
-                        .HasColumnType("varchar(max)");
-
-                    b.Property<DateTime?>("CreatedAt")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("datetime2")
-                        .HasDefaultValueSql("(sysutcdatetime())");
-
-                    b.Property<string>("Email")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .IsUnicode(false)
-                        .HasColumnType("varchar(100)");
-
-                    b.Property<string>("FirstName")
-                        .IsRequired()
-                        .HasMaxLength(20)
-                        .IsUnicode(false)
-                        .HasColumnType("varchar(20)");
-
-                    b.Property<string>("LastName")
-                        .IsRequired()
-                        .HasMaxLength(20)
-                        .IsUnicode(false)
-                        .HasColumnType("varchar(20)");
-
-                    b.Property<string>("PhoneNumber")
-                        .HasMaxLength(20)
-                        .IsUnicode(false)
-                        .HasColumnType("varchar(20)");
-
-                    b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.HasKey("GuestId");
-
-                    b.ToTable("Guests");
                 });
 
             modelBuilder.Entity("DealerApi.Entities.Models.LetterOfIntent", b =>
@@ -1322,7 +1322,7 @@ namespace DealerApi.DAL.Migrations
                         .IsUnicode(false)
                         .HasColumnType("varchar(max)");
 
-                    b.Property<int>("SalesPersonId")
+                    b.Property<int?>("SalesPersonId")
                         .HasColumnType("int")
                         .HasColumnName("SalesPersonID");
 
@@ -1330,7 +1330,8 @@ namespace DealerApi.DAL.Migrations
                         .HasName("PK__SalesPer__F9606DE1BBC4F70E");
 
                     b.HasIndex(new[] { "SalesPersonId", "MetricType", "MetricDate" }, "UQ_SalesPersonPerformance_Metric")
-                        .IsUnique();
+                        .IsUnique()
+                        .HasFilter("[SalesPersonID] IS NOT NULL");
 
                     b.HasIndex(new[] { "SalesPersonId", "MetricType", "MetricDate" }, "idx_SalesPersonPerformance_SalesPerson_Metric");
 
@@ -2016,7 +2017,6 @@ namespace DealerApi.DAL.Migrations
                     b.HasOne("DealerApi.Entities.Models.SalesPerson", "SalesPerson")
                         .WithMany("SalesPersonPerformances")
                         .HasForeignKey("SalesPersonId")
-                        .IsRequired()
                         .HasConstraintName("FK__SalesPers__Sales__52593CB8");
 
                     b.Navigation("SalesPerson");

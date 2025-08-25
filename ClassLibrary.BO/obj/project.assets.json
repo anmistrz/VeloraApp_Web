@@ -2714,23 +2714,23 @@
     ]
   },
   "packageFolders": {
-    "D:\\Users\\bsi80252\\.nuget\\packages\\": {},
+    "C:\\Users\\anasa\\.nuget\\packages\\": {},
     "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "D:\\Users\\bsi80252\\Exercise\\Learn C#\\Velora App\\VeloraApp\\ClassLibrary.BO\\DealerApi.Entities.csproj",
+      "projectUniqueName": "C:\\ANAS\\Project NET\\VeloraAppCore\\VeloraApp\\ClassLibrary.BO\\DealerApi.Entities.csproj",
       "projectName": "DealerApi.Entities",
-      "projectPath": "D:\\Users\\bsi80252\\Exercise\\Learn C#\\Velora App\\VeloraApp\\ClassLibrary.BO\\DealerApi.Entities.csproj",
-      "packagesPath": "D:\\Users\\bsi80252\\.nuget\\packages\\",
-      "outputPath": "D:\\Users\\bsi80252\\Exercise\\Learn C#\\Velora App\\VeloraApp\\ClassLibrary.BO\\obj\\",
+      "projectPath": "C:\\ANAS\\Project NET\\VeloraAppCore\\VeloraApp\\ClassLibrary.BO\\DealerApi.Entities.csproj",
+      "packagesPath": "C:\\Users\\anasa\\.nuget\\packages\\",
+      "outputPath": "C:\\ANAS\\Project NET\\VeloraAppCore\\VeloraApp\\ClassLibrary.BO\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
       ],
       "configFilePaths": [
-        "D:\\Users\\bsi80252\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Users\\anasa\\AppData\\Roaming\\NuGet\\NuGet.Config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
       ],

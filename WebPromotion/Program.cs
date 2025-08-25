@@ -49,6 +49,11 @@ builder.Services.AddHttpClient<IAccountServices, AccountService>(client =>
 {
     client.BaseAddress = new Uri(builder.Configuration["ApiBaseUrl"]);
 });
+builder.Services.AddHttpClient<IDashboardSalesPersonServices, DashboardSalesPersonServices>(client =>
+{
+    client.BaseAddress = new Uri(builder.Configuration["ApiBaseUrl"]);
+}).AddHttpMessageHandler<BearerTokenHandler>();
+
 
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddTransient<BearerTokenHandler>();
@@ -63,6 +68,7 @@ builder.Services.AddScoped<ITestDriveBusiness, TestDriveBusiness>();
 builder.Services.AddScoped<IAccountBusiness, AccountBusiness>();
 builder.Services.AddScoped<INotificationBusiness, NotificationBusiness>();
 builder.Services.AddScoped<ISalesActivityBusiness, SalesActivityBusiness>();
+builder.Services.AddScoped<IDashboardSalesPersonBusiness, DashboardSalesPersonBusiness>();
 
 
 builder.Services.AddApplicationServices(builder.Configuration);
@@ -73,7 +79,7 @@ var app = builder.Build();
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
 {
-    app.UseExceptionHandler("/Home/Error");
+    app.UseExceptionHandler("/Home/Error/NotFound");
     // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }

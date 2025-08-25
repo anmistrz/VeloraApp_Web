@@ -98,7 +98,7 @@ namespace DealerApi.API.Controllers
         }
 
         [HttpPost("delete-after-handled/{id}")]
-        // [Authorize(Roles = "salesPerson")]
+        [Authorize(Roles = "salesPerson")]
         public async Task<IActionResult> DeleteConsultHistoryAfterHandled(int id, [FromBody] DeleteConsultRequestDTO deleteRequest)
         {
             try
@@ -122,7 +122,7 @@ namespace DealerApi.API.Controllers
             }
         }
 
-        [HttpDelete("delete-before-handled/{id}")]
+        [HttpPost("delete-before-handled/{id}")]
         [Authorize(Roles = "salesPerson")]
         public async Task<IActionResult> DeleteConsultHistoryBeforeHandled(int id, [FromBody] DeleteConsultRequestDTO deleteRequest)
         {

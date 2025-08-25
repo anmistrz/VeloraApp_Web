@@ -16,4 +16,6 @@ public interface IUserAuthBL
 
     //get roles by user
     Task<List<string>> GetRolesByUserAsync(string email);
+
+    Task<bool> DeleteRoleInUserAsync(string email, string roleName);
 }

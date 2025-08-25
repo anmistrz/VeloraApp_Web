@@ -42,7 +42,7 @@ namespace DealerApi.API
                 {
                     return Unauthorized(new { error = "Invalid credentials" });
                 }
-                
+
                 return Ok(result);
             }
             catch (Exception ex)
@@ -161,6 +161,25 @@ namespace DealerApi.API
                 return StatusCode(StatusCodes.Status500InternalServerError, new { error = ex.Message });
             }
         }
-        
+
+
+        [HttpDelete("delete-role/{email}/{roleName}")]
+        public async Task<IActionResult> DeleteRoleByUser(string email, string roleName)
+        {
+
+            try
+            {
+                var result = await _userAuthBL.DeleteRoleInUserAsync(email, roleName);
+                if (!result)
+                {
+                    return BadRequest(new { error = "Failed to delete role from user" });
+                }
+                return Ok(new { message = "Role deleted from user successfully" });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, new { error = ex.Message });
+            }
+        }
     }
 }

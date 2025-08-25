@@ -1,5 +1,7 @@
 using System;
+using DealerApi.DAL.Context;
 using DealerApi.DAL.Interfaces;
+using DealerApi.Entities.Models;
 using Microsoft.AspNetCore.Identity;
 
 namespace DealerApi.DAL.DAL;
@@ -8,11 +10,13 @@ public class UserAuthDAL : IUserAuth
 {
     private readonly UserManager<IdentityUser> _userManager;
     private readonly RoleManager<IdentityRole> _roleManager;
+    private readonly DealerRndDBContext _context;
 
-    public UserAuthDAL(UserManager<IdentityUser> userManager, RoleManager<IdentityRole> roleManager)
+    public UserAuthDAL(UserManager<IdentityUser> userManager, RoleManager<IdentityRole> roleManager, DealerRndDBContext context)
     {
         _userManager = userManager;
         _roleManager = roleManager;
+        _context = context;
     }
 
 
@@ -62,6 +66,30 @@ public class UserAuthDAL : IUserAuth
         }
     }
 
+    public async Task<bool> DeleteRoleInUserAsync(string email, string roleName)
+    {
+        try
+        {
+            var user = await _userManager.FindByEmailAsync(email);
+            if (user == null)
+            {
+                throw new ArgumentException("User not found");
+            }
+
+            if (!await _roleManager.RoleExistsAsync(roleName))
+            {
+                throw new ArgumentException("Role does not exist");
+            }
+
+            var result = await _userManager.RemoveFromRoleAsync(user, roleName);
+            return result.Succeeded;
+        }
+        catch (Exception ex)
+        {
+            throw new InvalidOperationException($"Error deleting role from user: {ex.Message}", ex);
+        }
+    }
+
     public async Task<List<string>> GetRolesByUserAsync(string email)
     {
         try
@@ -105,13 +133,41 @@ public class UserAuthDAL : IUserAuth
         }
     }
 
-    public async Task<bool> RegisterAsync(string username, string email, string password)
+    public async Task<bool> RegisterAsync(string firstName, string lastName, string username, string email, string password)
     {
         try
         {
-            var user = new IdentityUser { Email = email, UserName = username };
-            var result = await _userManager.CreateAsync(user, password);
-            return result.Succeeded;
+            using (var transaction = await _context.Database.BeginTransactionAsync())
+            {
+                var user = new IdentityUser { Email = email, UserName = username };
+                var result = await _userManager.CreateAsync(user, password);
+                if (!result.Succeeded)
+                {
+                    throw new InvalidOperationException("User registration failed: " + string.Join(", ", result.Errors.Select(e => e.Description)));
+                }
+
+                var createCustomerVerified = new CustomerVerified
+                {
+                    FirstName = firstName,
+                    LastName = lastName,
+                    Email = email,
+                };
+
+                _context.CustomerVerifieds.Add(createCustomerVerified);
+                await _context.SaveChangesAsync();
+
+                if (!await _roleManager.RoleExistsAsync("customer"))
+                {
+                    await _roleManager.CreateAsync(new IdentityRole("customer"));
+                }
+
+                await _userManager.AddToRoleAsync(user, "customer");
+                await _context.SaveChangesAsync();
+
+                await _context.Database.CommitTransactionAsync();
+
+                return result.Succeeded;
+            }
         }
         catch (Exception ex)
         {

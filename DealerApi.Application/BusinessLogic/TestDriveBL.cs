@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json;
 using System.Threading.Tasks;
 using DealerApi.Application.DTO;
 using DealerApi.Application.Interface;
@@ -107,6 +108,7 @@ namespace DealerApi.Application.BusinessLogic
         {
             try
             {
+                Console.WriteLine($"TestDriveServices: Deleting test drive before handled with ID {testDriveId}, SalesPersonId {deleteTestDriveRequest.SalesPersonId}, DealerId {deleteTestDriveRequest.DealerId}, Reason: {deleteTestDriveRequest.Reason}");
                 var body = new DeleteTestDriveRequestDTO
                 {
                     SalesPersonId = deleteTestDriveRequest.SalesPersonId,
@@ -114,6 +116,8 @@ namespace DealerApi.Application.BusinessLogic
                     TestDriveId = testDriveId,
                     DealerId = deleteTestDriveRequest.DealerId
                 };
+
+                Console.WriteLine("bodyyyyyy:", JsonSerializer.Serialize(body));
 
                 var result = _testDriveDAL.DeleteTestDriveBeforeHandledAsync(testDriveId, body.SalesPersonId, body.DealerId, body.Reason);
                 return result;

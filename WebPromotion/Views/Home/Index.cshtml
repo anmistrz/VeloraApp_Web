@@ -777,17 +777,16 @@
                 </div>
                 <div class="modal-body">
                     <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
-                    
                     <div class="mb-3">
                         <label for="recipient-name" class="col-form-label">Choose Nearest Dealer</label>
-                        <select asp-for="DealerId" class="form-select" asp-items="@ViewBag.DealerOptions">
+                        <select id="consultDealerSelect" name="DealerId" class="form-select">
                             <option value="">Select Dealer</option>
                         </select>
                         <span asp-validation-for="DealerId" class="text-danger"></span>
                     </div>
                     <div class="mb-3">
                         <label for="recipient-name" class="col-form-label">Fill Your Car Unit</label>
-                        <select asp-for="DealerCarUnitId" class="form-select" asp-items="@ViewBag.CarOptions">
+                        <select id="consultCarSelect" name="DealerCarUnitId" class="form-select">
                             <option value="">Select Car Unit</option>
                         </select>
                         <span asp-validation-for="DealerCarUnitId" class="text-danger"></span>
@@ -844,17 +843,16 @@
                     </div>
                     <div class="modal-body">
                         <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
-                        
                         <div class="mb-3">
                             <label for="recipient-name" class="col-form-label">Choose Nearest Dealer</label>
-                            <select asp-for="DealerId" class="form-select" asp-items="@ViewBag.DealerOptions">
+                            <select id="testDriveDealerSelect" name="DealerId" class="form-select">
                                 <option value="">Select Dealer</option>
                             </select>
                             <span asp-validation-for="DealerId" class="text-danger"></span>
                         </div>
                         <div class="mb-3">
                             <label for="recipient-name" class="col-form-label">Fill Your Car Unit</label>
-                            <select asp-for="DealerCarUnitId" class="form-select" asp-items="@ViewBag.CarOptions">
+                            <select id="testDriveCarSelect" name="DealerCarUnitId" class="form-select">
                                 <option value="">Select Car Unit</option>
                             </select>
                             <span asp-validation-for="DealerCarUnitId" class="text-danger"></span>
@@ -911,4 +909,58 @@
 
 </div>
 
+
+<script>
+// Dealer and car data injected from backend
+var dealerCarData = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(ViewBag.DealerCarData));
+
+function populateDealerSelect(selectId) {
+        var select = document.getElementById(selectId);
+        select.innerHTML = '<option value="">Select Dealer</option>';
+        var added = new Set();
+        dealerCarData.forEach(function(entry) {
+                entry.dealers.forEach(function(dealer) {
+                        if (!added.has(dealer.dealerID)) {
+                                var opt = document.createElement('option');
+                                opt.value = dealer.dealerID;
+                                opt.text = dealer.dealerName;
+                                select.appendChild(opt);
+                                added.add(dealer.dealerID);
+                        }
+                });
+        });
+}
+
+function populateCarSelect(selectId, dealerId) {
+        var select = document.getElementById(selectId);
+        select.innerHTML = '<option value="">Select Car Unit</option>';
+        if (!dealerId) return;
+        var entry = dealerCarData.find(function(e) {
+                return e.dealers.some(function(d) { return d.dealerID == dealerId; });
+        });
+        if (entry && entry.cars) {
+                entry.cars.forEach(function(car) {
+                        var opt = document.createElement('option');
+                        opt.value = car.dealerCarUnitId;
+                        opt.text = car.carName;
+                        select.appendChild(opt);
+                });
+        }
+}
+
+// For Consultation Modal
+populateDealerSelect('consultDealerSelect');
+document.getElementById('consultDealerSelect').addEventListener('change', function() {
+        populateCarSelect('consultCarSelect', this.value);
+});
+// For Test Drive Modal
+populateDealerSelect('testDriveDealerSelect');
+document.getElementById('testDriveDealerSelect').addEventListener('change', function() {
+        populateCarSelect('testDriveCarSelect', this.value);
+});
+
+// Optionally, pre-populate car selects if editing
+// populateCarSelect('consultCarSelect', document.getElementById('consultDealerSelect').value);
+// populateCarSelect('testDriveCarSelect', document.getElementById('testDriveDealerSelect').value);
+</script>
 <script src="/_framework/aspnetcore-browser-refresh.js"></script>

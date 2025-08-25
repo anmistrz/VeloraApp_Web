@@ -1,7 +1,23 @@
 @model WebPromotion.Views.SalesPerson.Index
 @{
     @* ViewData["Title"] = "Index"; *@
-    var fullName = ViewBag.FullName;
+    var fullName = ViewBag.FullName ?? "";
+    var dataTotalConsultation = ViewBag.DataTotalConsultation ?? 0;
+    var dataTotalActivityConsultationByMonth = ViewBag.DataTotalActivityConsultationByMonth as IEnumerable<dynamic> ?? Enumerable.Empty<dynamic>();
+    var dataTotalActivityTestDriveByMonth = ViewBag.DataTotalActivityTestDriveByMonth as IEnumerable<dynamic> ?? Enumerable.Empty<dynamic>();
+    var dataSalesPerformanceReview = ViewBag.DataSalesPerformanceReview ?? 0;
+    Console.WriteLine("Data Sales Performance Review: " + dataSalesPerformanceReview);
+    var dataSalesAverageRating = ViewBag.DataSalesAverageRating ?? 0;
+    var dataTotalTestDrive = ViewBag.DataTotalTestDrive ?? 0;
+    var dataTargetConsultationThisMonth = ViewBag.DataTotalTargetConsultationThisMonth as IEnumerable<dynamic> ?? Enumerable.Empty<dynamic>();
+    var dataTargetTestDriveThisMonth = ViewBag.DataTotalTargetTestDriveThisMonth as IEnumerable<dynamic> ?? Enumerable.Empty<dynamic>();
+    // safe access for first item
+    var targetConsultationFirst = dataTargetConsultationThisMonth.Any() ? dataTargetConsultationThisMonth.First() : null;
+    var targetTestDriveFirst = dataTargetTestDriveThisMonth.Any() ? dataTargetTestDriveThisMonth.First() : null;
+    var listDataActivitySalesPerformanceThisMonth = ViewBag.ListDataActivitySalesPerformance as IEnumerable<dynamic> ?? Enumerable.Empty<dynamic>();
+
+    var uniqueMonthForActivityConsultation = dataTotalActivityConsultationByMonth.Select(x => x.month).Distinct().ToList();
+    var uniqueMonthForActivityTestDrive = dataTotalActivityTestDriveByMonth.Select(x => x.month).Distinct().ToList();
 }
 
 <h1>@ViewData["Title"]</h1>
@@ -21,7 +37,7 @@
 <div class="row">
     <div class="col-sm-6 col-md-3">
     <div class="card card-stats card-round">
-        <div class="card-body">
+        <div class="card-body mb-2 mt-2">
         <div class="row align-items-center">
             <div class="col-icon">
             <div
@@ -32,8 +48,8 @@
             </div>
             <div class="col col-stats ms-3 ms-sm-0">
             <div class="numbers">
-                <p class="card-category">Visitors</p>
-                <h4 class="card-title">1,294</h4>
+                <p class="card-category">Total Consultation</p>
+                <h4 class="card-title">@dataTotalConsultation</h4>
             </div>
             </div>
         </div>
@@ -42,7 +58,7 @@
     </div>
     <div class="col-sm-6 col-md-3">
     <div class="card card-stats card-round">
-        <div class="card-body">
+        <div class="card-body mb-2 mt-2">
         <div class="row align-items-center">
             <div class="col-icon">
             <div
@@ -53,8 +69,8 @@
             </div>
             <div class="col col-stats ms-3 ms-sm-0">
             <div class="numbers">
-                <p class="card-category">Subscribers</p>
-                <h4 class="card-title">1303</h4>
+                <p class="card-category">Total Test Drive</p>
+                <h4 class="card-title">@dataTotalTestDrive</h4>
             </div>
             </div>
         </div>
@@ -62,43 +78,43 @@
     </div>
     </div>
     <div class="col-sm-6 col-md-3">
-    <div class="card card-stats card-round">
-        <div class="card-body">
-        <div class="row align-items-center">
-            <div class="col-icon">
-            <div
-                class="icon-big text-center icon-success bubble-shadow-small"
-            >
-                <i class="fas fa-luggage-cart"></i>
-            </div>
-            </div>
-            <div class="col col-stats ms-3 ms-sm-0">
-            <div class="numbers">
-                <p class="card-category">Sales</p>
-                <h4 class="card-title">$ 1,345</h4>
+        <div class="card card-stats card-round">
+            <div class="card-body">
+            <div class="row align-items-center">
+                <div class="col-icon">
+                <div
+                    class="icon-big text-center icon-success bubble-shadow-small"
+                >
+                    <i class="fas fa-luggage-cart"></i>
+                </div>
+                </div>
+                <div class="col col-stats ms-2 ms-sm-0">
+                <div class="numbers">
+                    <p class="card-category">@targetConsultationFirst?.title</p>
+                    <h4 class="card-title">@(targetConsultationFirst?.value ?? 0) / 100</h4>
+                </div>
+                </div>
             </div>
             </div>
         </div>
-        </div>
-    </div>
     </div>
     <div class="col-sm-6 col-md-3">
     <div class="card card-stats card-round">
         <div class="card-body">
-        <div class="row align-items-center">
-            <div class="col-icon">
-            <div
-                class="icon-big text-center icon-secondary bubble-shadow-small"
-            >
-                <i class="far fa-check-circle"></i>
-            </div>
-            </div>
-            <div class="col col-stats ms-3 ms-sm-0">
-            <div class="numbers">
-                <p class="card-category">Order</p>
-                <h4 class="card-title">576</h4>
-            </div>
-            </div>
+            <div class="row align-items-center">
+                <div class="col-icon">
+                <div
+                    class="icon-big text-center icon-secondary bubble-shadow-small"
+                >
+                    <i class="far fa-check-circle"></i>
+                </div>
+                </div>
+                <div class="col col-stats ms-2 ms-sm-0">
+                <div class="numbers">
+                    <p class="card-category">@targetTestDriveFirst?.title</p>
+                    <h4 class="card-title">@(targetTestDriveFirst?.value ?? 0) / 100</h4>
+                </div>
+                </div>
         </div>
         </div>
     </div>
@@ -141,7 +157,7 @@
     <div class="card card-primary card-round">
         <div class="card-header">
         <div class="card-head-row">
-            <div class="card-title">Daily Sales</div>
+            <div class="card-title">Sales Performance</div>
             <div class="card-tools">
             <div class="dropdown">
                 <button
@@ -167,13 +183,14 @@
             </div>
             </div>
         </div>
-        <div class="card-category">March 25 - April 02</div>
+        @* this month *@
+        <div class="card-category">@DateTime.Now.ToString("MMMM yyyy")</div>
         </div>
         <div class="card-body pb-0">
         <div class="mb-4 mt-2">
-            <h1>$4,578.58</h1>
+            <h1>@dataSalesPerformanceReview</h1>
         </div>
-        <div class="pull-in">
+        <div class="pull-in px-2">
             <canvas id="dailySalesChart"></canvas>
         </div>
         </div>
@@ -190,7 +207,9 @@
     </div>
     </div>
 </div>
-<div class="row">
+
+@* Geolocation *@
+@* <div class="row">
     <div class="col-md-12">
     <div class="card card-round">
         <div class="card-header">
@@ -319,8 +338,10 @@
         </div>
     </div>
     </div>
-</div>
-<div class="row">
+</div> *@
+@* End Geolocation *@
+
+@* <div class="row">
     <div class="col-md-4">
     <div class="card card-round">
         <div class="card-body">
@@ -622,4 +643,297 @@
         </div>
     </div>
     </div>
-</div>
+</div> *@
+
+
+<!-- Kaiadmin JS -->
+<script src="~/assets/js/kaiadmin.min.js"></script>
+<!--   Core JS Files   -->
+<script src="~/assets/js/core/jquery-3.7.1.min.js"></script>
+
+<!-- jQuery Scrollbar -->
+<script src="~/assets/js/plugin/jquery-scrollbar/jquery.scrollbar.min.js"></script>
+
+<!-- Chart JS -->
+<script src="~/assets/js/plugin/chart.js/chart.min.js"></script>
+
+<!-- jQuery Sparkline -->
+<script src="~/assets/js/plugin/jquery.sparkline/jquery.sparkline.min.js"></script>
+
+<!-- Chart Circle -->
+<script src="~/assets/js/plugin/chart-circle/circles.min.js"></script>
+
+<!-- Datatables -->
+<script src="~/assets/js/plugin/datatables/datatables.min.js"></script>
+
+<!-- Bootstrap Notify -->
+<script src="~/assets/js/plugin/bootstrap-notify/bootstrap-notify.min.js"></script>
+
+<!-- jQuery Vector Maps -->
+<script src="~/assets/js/plugin/jsvectormap/jsvectormap.min.js"></script>
+<script src="~/assets/js/plugin/jsvectormap/world.js"></script>
+
+<!-- Sweet Alert -->
+<script src="~/assets/js/plugin/sweetalert/sweetalert.min.js"></script>
+
+
+<script>
+        var uniqueMonthForActivityConsultation = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(uniqueMonthForActivityConsultation));
+        var dataTotalActivityConsultationByMonth = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(dataTotalActivityConsultationByMonth));
+
+        var dataTotalActivityTestDriveByMonth = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(dataTotalActivityTestDriveByMonth));
+        var uniqueMonthForActivityTestDrive = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(uniqueMonthForActivityTestDrive));
+
+        var listDataActivitySalesPerformanceThisMonth = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(listDataActivitySalesPerformanceThisMonth));
+        console.log("listDataActivitySalesPerformanceThisMonth:", listDataActivitySalesPerformanceThisMonth);
+
+      $("#lineChart").sparkline([102, 109, 120, 99, 110, 105, 115], {
+        type: "line",
+        height: "70",
+        width: "100%",
+        lineWidth: "2",
+        lineColor: "#177dff",
+        fillColor: "rgba(23, 125, 255, 0.14)",
+      });
+
+      $("#lineChart2").sparkline([99, 125, 122, 105, 110, 124, 115], {
+        type: "line",
+        height: "70",
+        width: "100%",
+        lineWidth: "2",
+        lineColor: "#f3545d",
+        fillColor: "rgba(243, 84, 93, .14)",
+      });
+
+      $("#lineChart3").sparkline([105, 103, 123, 100, 95, 105, 115], {
+        type: "line",
+        height: "70",
+        width: "100%",
+        lineWidth: "2",
+        lineColor: "#ffa534",
+        fillColor: "rgba(255, 165, 52, .14)",
+      });
+
+
+        // Jsvectormap
+    var world_map = new jsVectorMap({
+        selector: "#world-map",
+        map: "world",
+        zoomOnScroll: false,
+        regionStyle: {
+            hover: {
+                fill: '#435ebe'
+            }
+        },
+        markers: [
+            {
+                name: 'Indonesia',
+                coords: [-6.229728, 106.6894311],
+                style: {
+                    fill: '#435ebe'
+                }
+            },
+            {
+                name: 'United States',
+                coords: [38.8936708, -77.1546604],
+                style: {
+                    fill: '#28ab55'
+                }
+            },
+            {
+                name: 'Russia',
+                coords: [55.5807481, 36.825129],
+                style: {
+                    fill: '#f3616d'
+                }
+            },
+            {
+                name: 'China',
+                coords: [39.9385466, 116.1172735]
+            },
+            {
+                name: 'United Kingdom',
+                coords: [51.5285582, -0.2416812]
+            },
+            {
+                name: 'India',
+                coords: [26.8851417, 75.6504721]
+            },
+            {
+                name: 'Australia',
+                coords: [-35.2813046, 149.124822]
+            },
+            {
+                name: 'Brazil',
+                coords: [-22.9140693, -43.5860681]
+            },
+            {
+                name: 'Egypt',
+                coords: [26.834955, 26.3823725]
+            },
+        ],
+        onRegionTooltipShow(event, tooltip) {
+            tooltip.css({ backgroundColor: '#435ebe' })
+        }
+    });
+
+    //Chart
+
+    var ctx = document.getElementById('statisticsChart').getContext('2d');
+
+    var statisticsChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: uniqueMonthForActivityConsultation,
+            datasets: [ {
+                label: "Consultation Handled",
+                borderColor: '#f3545d',
+                pointBackgroundColor: 'rgba(243, 84, 93, 0.6)',
+                pointRadius: 0,
+                backgroundColor: 'rgba(243, 84, 93, 0.4)',
+                legendColor: '#f3545d',
+                fill: false,
+                borderWidth: 2,
+                data: dataTotalActivityConsultationByMonth.map(x => x.totalCount)
+            }, {
+                label: "Test Drives Handled",
+                borderColor: '#fdaf4b',
+                pointBackgroundColor: 'rgba(253, 175, 75, 0.6)',
+                pointRadius: 0,
+                backgroundColor: 'rgba(253, 175, 75, 0.4)',
+                legendColor: '#fdaf4b',
+                fill: false,
+                borderWidth: 2,
+                data: dataTotalActivityTestDriveByMonth.map(x => x.totalCount)
+            }]
+        },
+        options : {
+            responsive: true, 
+            maintainAspectRatio: false,
+            legend: {
+                display: false
+            },
+            tooltips: {
+                bodySpacing: 4,
+                mode:"nearest",
+                intersect: 0,
+                position:"nearest",
+                xPadding:10,
+                yPadding:10,
+                caretPadding:10
+            },
+            layout:{
+                padding:{left:5,right:5,top:15,bottom:15}
+            },
+            scales: {
+                yAxes: [{
+                    ticks: {
+                        fontStyle: "500",
+                        beginAtZero: false,
+                        maxTicksLimit: 5,
+                        padding: 10
+                    },
+                    gridLines: {
+                        drawTicks: false,
+                        display: false
+                    }
+                }],
+                xAxes: [{
+                    gridLines: {
+                        zeroLineColor: "transparent"
+                    },
+                    ticks: {
+                        padding: 10,
+                        fontStyle: "500"
+                    }
+                }]
+            }, 
+            legendCallback: function(chart) { 
+                var text = []; 
+                text.push('<ul class="' + chart.id + '-legend html-legend">'); 
+                for (var i = 0; i < chart.data.datasets.length; i++) { 
+                    text.push('<li><span style="background-color:' + chart.data.datasets[i].legendColor + '"></span>'); 
+                    if (chart.data.datasets[i].label) { 
+                        text.push(chart.data.datasets[i].label); 
+                    } 
+                    text.push('</li>'); 
+                } 
+                text.push('</ul>'); 
+                return text.join(''); 
+            }  
+        }
+    });
+
+    var myLegendContainer = document.getElementById("myChartLegend");
+
+    // generate HTML legend
+    myLegendContainer.innerHTML = statisticsChart.generateLegend();
+
+    // bind onClick event to all LI-tags of the legend
+    var legendItems = myLegendContainer.getElementsByTagName('li');
+    for (var i = 0; i < legendItems.length; i += 1) {
+        legendItems[i].addEventListener("click", legendClickCallback, false);
+    }
+
+    var dailySalesChart = document.getElementById('dailySalesChart').getContext('2d');
+
+    var myDailySalesChart = new Chart(dailySalesChart, {
+        type: 'line',
+        data: {
+            labels: listDataActivitySalesPerformanceThisMonth.map(x => x.day),
+            datasets:[ {
+                label: "Sales Performance",
+                fill: !0, 
+                backgroundColor: "rgba(255,255,255,0.2)", 
+                borderColor: "#fff", borderCapStyle: "butt", 
+                borderDash: [], borderDashOffset: 0, 
+                pointBorderColor: "#fff", 
+                pointBackgroundColor: "#fff", 
+                pointBorderWidth: 1, 
+                pointHoverRadius: 5, 
+                pointHoverBackgroundColor: "#fff", 
+                pointHoverBorderColor: "#fff", 
+                pointHoverBorderWidth: 1, 
+                pointRadius: 1, 
+                pointHitRadius: 5, 
+                data: listDataActivitySalesPerformanceThisMonth.map(x => x.totalCount)
+            }]
+        },
+        options : {
+            maintainAspectRatio:!1, legend: {
+                display: !1
+            }
+            , animation: {
+                easing: "easeInOutBack"
+            }
+            , scales: {
+                yAxes:[ {
+                    display:!1, ticks: {
+                        fontColor: "rgba(0,0,0,0.5)", fontStyle: "bold", beginAtZero: !0, maxTicksLimit: 10, padding: 0
+                    }
+                    , gridLines: {
+                        drawTicks: !1, display: !1
+                    }
+                }
+                ], xAxes:[ {
+                    display:!1, gridLines: {
+                        zeroLineColor: "transparent"
+                    }
+                    , ticks: {
+                        padding: -20, fontColor: "rgba(255,255,255,0.2)", fontStyle: "bold"
+                    }
+                }
+                ]
+            }
+        }
+    });
+
+    $("#activeUsersChart").sparkline([112,109,120,107,110,85,87,90,102,109,120,99,110,85,87,94], {
+        type: 'bar',
+        height: '100',
+        barWidth: 9,
+        barSpacing: 10,
+        barColor: 'rgba(255,255,255,.3)'
+    });
+
+</script>

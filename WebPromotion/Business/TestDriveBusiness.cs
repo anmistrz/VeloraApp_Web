@@ -1,12 +1,14 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json;
 using System.Threading.Tasks;
 using DealerApi.Application.DTO;
 using WebPromotion.Business.Interface;
 using WebPromotion.Models;
 using WebPromotion.Services;
 using WebPromotion.Services.DTO;
+using WebPromotion.ViewModels.TestDriveView.TestDriveGuestViewModel;
 
 namespace WebPromotion.Business
 {
@@ -27,25 +29,30 @@ namespace WebPromotion.Business
                 {
                     throw new ArgumentException("Model must not be null", nameof(model));
                 }
-                // Map DeleteTestDriveRequestClientDTO to DeleteTestDriveRequestDTO
                 var mappedModel = new DeleteTestDriveRequestDTO
                 {
-                    // Map properties from the client DTO to the service DTO
                     TestDriveId = model.TestDriveId,
                     Reason = model.Reason,
                     SalesPersonId = model.SalesPersonId,
                     DealerId = model.DealerId
                 };
-                return _testDriveService.DeleteTestDriveAfterHandledAsync(testDriveId, mappedModel);
+                var resultTask = _testDriveService.DeleteTestDriveAfterHandledAsync(testDriveId, mappedModel);
+                resultTask.Wait();
+                if (!resultTask.Result)
+                {
+                    // Not found or could not be deleted
+                    return Task.FromResult(false);
+                }
+                return Task.FromResult(true);
             }
-            catch (Exception ex)
+            catch (InvalidOperationException ex)
             {
-                // Handle exceptions as needed, e.g., logging
+                // Unexpected error
                 throw new Exception("An error occurred while deleting test drive after handled.", ex);
             }
         }
 
-        public Task<bool> DeleteTestDriveBeforeHandled(int testDriveId, DeleteTestDriveRequestClientDTO model)
+        public async Task<bool> DeleteTestDriveBeforeHandled(int testDriveId, DeleteTestDriveRequestClientDTO model)
         {
             try
             {
@@ -53,7 +60,7 @@ namespace WebPromotion.Business
                 {
                     throw new ArgumentException("Model must not be null", nameof(model));
                 }
-                // Map DeleteTestDriveRequestClientDTO to DeleteTestDriveRequestDTO
+                Console.WriteLine($"De bUSINESS leting test drive before handled with ID: {testDriveId}, SalesPersonId: {model.SalesPersonId}, DealerId: {model.DealerId}, Reason: {model.Reason}");
                 var mappedModel = new DeleteTestDriveRequestDTO
                 {
                     TestDriveId = model.TestDriveId,
@@ -61,11 +68,17 @@ namespace WebPromotion.Business
                     SalesPersonId = model.SalesPersonId,
                     DealerId = model.DealerId
                 };
-                return _testDriveService.DeleteTestDriveBeforeHandledAsync(testDriveId, mappedModel);
+                var resultTask = await _testDriveService.DeleteTestDriveBeforeHandledAsync(testDriveId, mappedModel);
+                if (!resultTask)
+                {
+                    // Not found or could not be deleted
+                    return false;
+                }
+                return true;
             }
-            catch (Exception ex)
+            catch (InvalidOperationException ex)
             {
-                // Handle exceptions as needed, e.g., logging
+                // Unexpected error
                 throw new Exception("An error occurred while deleting test drive before handled.", ex);
             }
         }
@@ -96,11 +109,29 @@ namespace WebPromotion.Business
             }
         }
 
-        public Task<TestDrive> InsertTestDriveGuest(TestDriveInsertGuestDTO model)
+        public Task<TestDrive> InsertTestDriveGuest(TestDriveGuestViewModels model, int carId)
         {
             try
             {
-                return _testDriveService.CreateAsyncTestDriveGuest(model);
+                if (model == null)
+                {
+                    throw new ArgumentException("Model must not be null", nameof(model));
+                }
+
+                var dataBody = new TestDriveInsertGuestDTO
+                {
+                    FirstName = model.FirstName,
+                    LastName = model.LastName,
+                    Email = model.Email,
+                    PhoneNumber = model.PhoneNumber,
+                    AppointmentDate = model.ConsultDate,
+                    Note = model.Note,
+                    DealerId = model.DealerId,
+                    DealerCarUnitId = int.Parse(model.DealerCarUnitId),
+                    CarId = carId
+                };
+                Console.WriteLine($"Data TEST DRIVE to be sent business: {JsonSerializer.Serialize(dataBody)}");
+                return _testDriveService.CreateAsyncTestDriveGuest(dataBody);
             }
             catch (Exception ex)
             {
