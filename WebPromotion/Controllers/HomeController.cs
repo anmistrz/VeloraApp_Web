@@ -46,32 +46,15 @@ namespace WebPromotion.Controllers
         {
             try
             {
-
                 var DealerCarOptions = _dealerCarBusiness.GetOptionsDealerCarUnitByStatus("TestDrive") ?? new List<List<DealerCarUnitOptionsDTO>>();
                 Console.WriteLine($"DealerCarOptions: {JsonSerializer.Serialize(DealerCarOptions)}");
 
-                ViewBag.DealerCarOptions = DealerCarOptions;
-
-                ViewBag.DealerOptions = DealerCarOptions?
-                    .SelectMany(optionList => optionList.SelectMany(option => option.Dealers))
-                    .Select(x => new SelectListItem
-                    {
-                        // Value = x.DealerID.ToString(),
-                        // Text = x.DealerName
-                        Value = x.DealerID.ToString(),
-                        Text = x.DealerName
-                    }).ToList() ?? new List<SelectListItem>();
-
-                ViewBag.CarOptions = DealerCarOptions?
-                    .SelectMany(optionList => optionList.SelectMany(option => option.Cars))
-                    .Select(x => new SelectListItem
-                    {
-                        Value = $"{x.CarId} - {x.DealerCarUnitId}",
-                        Text = x.CarName
-                    }).ToList() ?? new List<SelectListItem>();
-
-                // Set default values for the dropdowns
-
+                // Pass the raw data for use in JS
+                ViewBag.DealerCarData = DealerCarOptions.Select(optionList => optionList.Select(option => new {
+                    dealers = option.Dealers.Select(d => new { dealerID = d.DealerID, dealerName = d.DealerName, dealerCarUnitId = d.DealerCarUnitId }),
+                    cars = option.Cars.Select(c => new { carId = c.CarId, dealerCarUnitId = c.DealerCarUnitId, carName = c.CarName }),
+                    dealerCarUnits = option.DealerCarUnits.Select(u => new { dealerCarUnitId = u.DealerCarUnitId })
+                }).ToList()).SelectMany(x => x).ToList();
 
                 Console.WriteLine("ErrorModal", TempData["ErrorModal"]);
                 // Handle modal dari TempData setelah redirect
@@ -83,7 +66,6 @@ namespace WebPromotion.Controllers
                         ViewBag.SuccessModal = JsonSerializer.Deserialize<ModalViewModels>(successModalJson);
                     }
                 }
-                
                 if (TempData["ErrorModal"] != null)
                 {
                     var errorModalJson = TempData["ErrorModal"]?.ToString();
@@ -95,13 +77,11 @@ namespace WebPromotion.Controllers
                 
                 return View();
             }
-
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error retrieving car options");
                 ViewBag.ErrorMessage = "An error occurred while loading car options.";
             }
-
             return View();
         }
 
@@ -109,37 +89,19 @@ namespace WebPromotion.Controllers
         [HttpPost]
         public async Task<IActionResult> AddConsultation(ConsultHistoryInsertGuestViewModels model)
         {
-            Console.WriteLine($"Received model: {JsonSerializer.Serialize(model)}");
             
             // Additional validation for DealerId
             if (model.DealerId == 0)
             {
                 ModelState.AddModelError("DealerId", "Please select a dealer");
             }
-            
+
             if (ModelState.IsValid)
             {
                 try
                 {
-                    var getDealerCarUnit = model.DealerCarUnitId.Split('-');
-                    var dataBody = new ConsultationInsertGuestDTO
-                    {
-                        FirstName = model.FirstName,
-                        LastName = model.LastName,
-                        Email = model.Email,
-                        PhoneNumber = model.PhoneNumber,
-                        DealerCarUnitId = int.Parse(getDealerCarUnit[1].Trim()),
-                        ConsultDate = model.ConsultDate,
-                        Note = model.Note,
-                        SalesPersonId = model.SalesPersonId,
-                        Budget = model.Budget ?? 0,
-                        DealerId = model.DealerId
-                    };
-
-                    Console.WriteLine($"Data to be sent: {JsonSerializer.Serialize(dataBody)}");
-
-                    await _consultationBusiness.CreateConsultHistoryGuest(dataBody);
-
+                    await _consultationBusiness.CreateConsultHistoryGuest(model);
+                    
                     // Set success modal untuk ditampilkan di Index
                     TempData["SuccessModal"] = JsonSerializer.Serialize(new ModalViewModels
                     {
@@ -191,31 +153,49 @@ namespace WebPromotion.Controllers
         public async Task<IActionResult> AddTestDrive(TestDriveGuestViewModels model)
         {
             Console.WriteLine($"Received model: {JsonSerializer.Serialize(model)}");
-
             Console.WriteLine($"DealerCarUnitId: {ModelState.IsValid}");
 
+            // Validate DealerCarUnitId is not null/empty and is a valid integer
+            int dealerCarUnitIdInt = 0;
+            if (string.IsNullOrWhiteSpace(model.DealerCarUnitId) || !int.TryParse(model.DealerCarUnitId, out dealerCarUnitIdInt))
+            {
+                ModelState.AddModelError("DealerCarUnitId", "Please select a valid car unit.");
+            }
 
             if (ModelState.IsValid)
             {
                 try
                 {
-                    var getDealerCarUnit = model.DealerCarUnitId.Split('-');
-                    var dataBody = new TestDriveInsertGuestDTO
+                    var getDealerCarData = _dealerCarBusiness.GetOptionsDealerCarUnitByStatus("TestDrive");
+                    var getCarIdByDealerCarUnit = 0;
+                    if (getDealerCarData != null && getDealerCarData.Any())
+                    {
+                        var dealerCarUnit = getDealerCarData
+                            .SelectMany(x => x)
+                            .FirstOrDefault(x => x.DealerCarUnits.Any(u => u.DealerCarUnitId == dealerCarUnitIdInt));
+                        if (dealerCarUnit != null)
+                        {
+                            getCarIdByDealerCarUnit = dealerCarUnit.Cars
+                                .FirstOrDefault(c => c.DealerCarUnitId == dealerCarUnitIdInt)?.CarId ?? 0;
+                        }
+                    }
+
+                    var dataBody = new TestDriveGuestViewModels
                     {
                         FirstName = model.FirstName,
                         LastName = model.LastName,
                         Email = model.Email,
                         PhoneNumber = model.PhoneNumber,
-                        AppointmentDate = model.ConsultDate,
+                        ConsultDate = model.ConsultDate,
                         Note = model.Note,
                         DealerId = model.DealerId,
-                        DealerCarUnitId = int.Parse(getDealerCarUnit[1].Trim()),
-                        CarId = int.Parse(getDealerCarUnit[0].Trim())
+                        DealerCarUnitId = model.DealerCarUnitId,
+                        CarId = getCarIdByDealerCarUnit
                     };
 
                     Console.WriteLine($"Data TEST DRIVE to be sent: {JsonSerializer.Serialize(dataBody)}");
 
-                    await _testDriveBusiness.InsertTestDriveGuest(dataBody);
+                    await _testDriveBusiness.InsertTestDriveGuest(dataBody, getCarIdByDealerCarUnit);
 
                     // Set success modal untuk ditampilkan di Index
                     TempData["SuccessModal"] = JsonSerializer.Serialize(new ModalViewModels

@@ -9,7 +9,7 @@ public partial class SalesPersonPerformance
 {
     public int PerformanceId { get; set; }
 
-    public int SalesPersonId { get; set; }
+    public int? SalesPersonId { get; set; }
 
     public string MetricType { get; set; }
 

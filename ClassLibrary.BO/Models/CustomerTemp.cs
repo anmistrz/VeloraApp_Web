@@ -5,9 +5,9 @@ using System.Collections.Generic;
 
 namespace DealerApi.Entities.Models;
 
-public partial class Guest
+public partial class CustomerVerified
 {
-    public int GuestId { get; set; }
+    public int CustomerVerifiedId { get; set; }
 
     public string FirstName { get; set; }
 

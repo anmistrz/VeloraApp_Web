@@ -90,5 +90,29 @@ namespace DealerApi.API2.Controllers
                 return StatusCode(500, "Internal server error");
             }
         }
+
+        [HttpGet("by-email/{email}")]
+        public async Task<IActionResult> GetSalesPersonByEmail(string email)
+        {
+            if (string.IsNullOrEmpty(email))
+            {
+                return BadRequest("Email cannot be null or empty");
+            }
+
+            try
+            {
+                var salesPersons = await _salesPersonBL.GetSalesPersonByEmailAsync(email);
+                if (salesPersons == null || !salesPersons.Any())
+                {
+                    return NotFound("No sales person found with the provided email");
+                }
+                return Ok(salesPersons);
+            }
+            catch (Exception ex)
+            {
+                // Log the exception
+                return StatusCode(500, "Internal server error");
+            }
+        }
     }
 }

@@ -1,12 +1,14 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json;
 using System.Threading.Tasks;
 using DealerApi.Application.DTO;
 using WebPromotion.Business.Interface;
 using WebPromotion.Models;
 using WebPromotion.Services.Consultation;
 using WebPromotion.Services.DTO;
+using WebPromotion.ViewModels.ConsultHistoryView;
 
 namespace WebPromotion.Business
 {
@@ -19,11 +21,25 @@ namespace WebPromotion.Business
             _consultationServices = consultationServices;
         }
 
-        public Task<ConsultHistory> CreateConsultHistoryGuest(ConsultationInsertGuestDTO consultation)
+        public Task<ConsultHistory> CreateConsultHistoryGuest(ConsultHistoryInsertGuestViewModels consultation)
         {
-            try 
+            try
             {
-                return _consultationServices.CreateAsyncConsultHistoryGuest(consultation);
+                var mappedModel = new ConsultationInsertGuestDTO
+                {
+                    FirstName = consultation.FirstName,
+                    LastName = consultation.LastName,
+                    Email = consultation.Email,
+                    PhoneNumber = consultation.PhoneNumber,
+                    DealerCarUnitId = int.Parse(consultation.DealerCarUnitId),
+                    ConsultDate = consultation.ConsultDate,
+                    Note = consultation.Note,
+                    SalesPersonId = consultation.SalesPersonId,
+                    Budget = consultation.Budget ?? 0,
+                    DealerId = consultation.DealerId
+                };
+                Console.WriteLine($"Mapped Model: {JsonSerializer.Serialize(mappedModel)}");
+                return _consultationServices.CreateAsyncConsultHistoryGuest(mappedModel);
             }
             catch (Exception ex)
             {
@@ -81,11 +97,16 @@ namespace WebPromotion.Business
             }
         }
 
-        public Task<IEnumerable<ConsultHistoryRequestClientDTO>> GetConsultHistoryRequestBySalesPerson(string salesPersonId)
+        public async Task<IEnumerable<ConsultHistoryRequestClientDTO>> GetConsultHistoryRequestBySalesPerson(string salesPersonId)
         {
             try
             {
-                return _consultationServices.GetConsultHistoryRequestBySalesPersonAsync(salesPersonId);
+                var result = await _consultationServices.GetConsultHistoryRequestBySalesPersonAsync(salesPersonId);
+                if (result == null || !result.Any())
+                {
+                    return new List<ConsultHistoryRequestClientDTO>();
+                }
+                return result;
             }
             catch (Exception ex)
             {

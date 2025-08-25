@@ -33,7 +33,7 @@ public partial class DealerRndDBContext : IdentityDbContext
 
     public virtual DbSet<Customer> Customers { get; set; }
 
-    public virtual DbSet<Guest> Guests { get; set; }
+    public virtual DbSet<CustomerVerified> CustomerVerifieds { get; set; }
 
     public virtual DbSet<CustomerRating> CustomerRatings { get; set; }
 
@@ -67,11 +67,19 @@ public partial class DealerRndDBContext : IdentityDbContext
 
     public virtual DbSet<WarrantyRegistration> WarrantyRegistrations { get; set; }
 
-    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+    // protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+    // {
+    //     if (!optionsBuilder.IsConfigured)
+    //     {
+    //         optionsBuilder.UseSqlServer("Data Source=localhost;Initial Catalog=DealerRndDBMigrate;User ID=sa;Password=Alikompang123#;Trust Server Certificate=True");
+    //     }
+    // }
+    
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
         if (!optionsBuilder.IsConfigured)
         {
-            optionsBuilder.UseSqlServer("Data Source=localhost;Initial Catalog=DealerRndDBMigrate;User ID=sa;Password=Alikompang123#;Trust Server Certificate=True");
+            optionsBuilder.UseSqlServer("Data Source=ANMISTRZ\\SQLEXPRESS;Initial Catalog=DealerRndDBMigrate;User ID=localhost;Password=anas123;Encrypt=True;Trust Server Certificate=True");
         }
     }
 
@@ -282,9 +290,9 @@ public partial class DealerRndDBContext : IdentityDbContext
                 .IsUnicode(false);
         });
 
-        modelBuilder.Entity<Guest>(entity =>
+        modelBuilder.Entity<CustomerVerified>(entity =>
         {
-            entity.Property(e => e.GuestId).HasColumnName("GuestID");
+            entity.Property(e => e.CustomerVerifiedId).HasColumnName("CustomerVerifiedID");
             entity.Property(e => e.Address).IsUnicode(false);
             entity.Property(e => e.CreatedAt).HasDefaultValueSql("(sysutcdatetime())");
             entity.Property(e => e.Email)
@@ -873,7 +881,7 @@ public partial class DealerRndDBContext : IdentityDbContext
         //SalesPersonPerformance
         modelBuilder.Entity<SalesPersonPerformance>().HasData(
             new SalesPersonPerformance { PerformanceId = 1, MetricDate = DateOnly.Parse("2023-12-12T10:00:00"), SalesPersonId = 1, MetricType = "Sales", MetricValue = 5, Notes = "Excellent performance in sales this month." },
-            new SalesPersonPerformance { PerformanceId =2,  MetricDate = DateOnly.Parse("2023-12-12T10:00:00"), SalesPersonId = 2, MetricType = "Customer Satisfaction", MetricValue = 4.5, Notes = "High customer satisfaction ratings." }
+            new SalesPersonPerformance { PerformanceId = 2, MetricDate = DateOnly.Parse("2023-12-12T10:00:00"), SalesPersonId = 2, MetricType = "Customer Satisfaction", MetricValue = 4.5, Notes = "High customer satisfaction ratings." }
          );
     }
 

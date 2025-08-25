@@ -125,9 +125,9 @@ namespace DealerApi.API.Controllers
             }
         }
 
-        [HttpDelete("delete-before-handled")]
+        [HttpPost("delete-before-handled/{testDriveId}")]
         [Authorize(Roles = "salesPerson")]
-        public async Task<IActionResult> DeleteTestDriveBeforeHandled(int consultHistoryId, [FromBody] DeleteTestDriveRequestDTO deleteTestDriveRequest)
+        public async Task<IActionResult> DeleteTestDriveBeforeHandled(int testDriveId, [FromBody] DeleteTestDriveRequestDTO deleteTestDriveRequest)
         {
             try
             {
@@ -135,6 +135,10 @@ namespace DealerApi.API.Controllers
                 {
                     return BadRequest(new { error = "Request body cannot be null or empty" });
                 }
+
+                Console.WriteLine($"Deleting test drive with ID: {testDriveId}, SalesPersonId: {deleteTestDriveRequest.SalesPersonId}, DealerId: {deleteTestDriveRequest.DealerId}, Reason: {deleteTestDriveRequest.Reason}");
+
+                Console.WriteLine($"ModelState is valid: {ModelState.IsValid}");
 
                 if (!ModelState.IsValid)
                 {
@@ -147,7 +151,9 @@ namespace DealerApi.API.Controllers
                     return BadRequest(new { errors });
                 }
 
-                var result = await _testDriveBL.DeleteTestDriveBeforeHandledAsync(consultHistoryId, deleteTestDriveRequest);
+                Console.WriteLine($"DeleteTestDriveBeforeHandled: SalesPersonId: {deleteTestDriveRequest.SalesPersonId}, DealerId: {deleteTestDriveRequest.DealerId}, Reason: {deleteTestDriveRequest.Reason}");
+
+                var result = await _testDriveBL.DeleteTestDriveBeforeHandledAsync(testDriveId, deleteTestDriveRequest);
                 if (!result)
                 {
                     return NotFound(new { error = "Test drive not found or could not be deleted" });

@@ -1,8 +1,10 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
+using ClassLibrary.BO.ModelNotConnectDB;
 using ClassLibrary.DAL.Interfaces;
 using DealerApi.DAL.Context;
 using DealerApi.Entities.Models;
@@ -14,9 +16,12 @@ namespace ClassLibrary.DAL.DAL
     public class SalesActivityDAL : ISalesActivityLog
     {
         private readonly DealerRndDBContext _context;
-        public SalesActivityDAL(DealerRndDBContext context)
+        private readonly IEmailNotification _emailNotification;
+
+        public SalesActivityDAL(DealerRndDBContext context, IEmailNotification emailNotification)
         {
             _context = context;
+            _emailNotification = emailNotification;
         }
 
         public async Task<IEnumerable<(SalesActivityLog, Customer, Car)>> GetAllSalesActivitiesBySalesPersonAsync(int salesPersonId, string ActivityType)
@@ -108,8 +113,21 @@ namespace ClassLibrary.DAL.DAL
                     if (salesActivity != null)
                     {
                         salesActivity.Details = result;
+                        salesActivity.ActivityType = "ConsultationCompleted";
                         _context.SalesActivityLogs.Update(salesActivity);
                         await _context.SaveChangesAsync();
+
+                        var dataForBodyEmail = await _context.Notifications
+                        .Where(n => n.ConsultHistoryId == salesActivity.ConsultationId && n.NotificationType == "ConsultationRequestHandled")
+                        .Join(_context.Customers,
+                            n => n.CustomerId,
+                            c => c.CustomerId,
+                            (n, c) => new
+                            {
+                                CustomerName = $"{c.FirstName} {c.LastName}",
+                                CustomerEmail = c.Email
+                            })
+                        .FirstOrDefaultAsync();
 
                         var getNotificationById = await _context.Notifications
                             .FirstOrDefaultAsync(n => n.NotificationId == salesActivity.NotificationId && n.NotificationType == "ConsultationRequestHandled");
@@ -127,26 +145,46 @@ namespace ClassLibrary.DAL.DAL
                             }
                         }
 
-                        var getSalesPerformance = await _context.SalesPersonPerformances
-                            .FirstOrDefaultAsync(sp => sp.SalesPersonId == salesActivity.SalesPersonId && sp.MetricType == "ConsultationCar" && sp.MetricDate == DateOnly.FromDateTime(DateTime.UtcNow));
+                        // var getSalesPerformance = await _context.SalesPersonPerformances
+                        //     .FirstOrDefaultAsync(sp => sp.SalesPersonId == salesActivity.SalesPersonId && sp.MetricType == "ConsultationCar" && sp.MetricDate == DateOnly.FromDateTime(DateTime.UtcNow));
 
-                        var addSalesPerformance = new SalesPersonPerformance
+                        // var addSalesPerformance = new SalesPersonPerformance
+                        // {
+                        //     SalesPersonId = salesActivity.SalesPersonId,
+                        //     MetricType = "ConsultationCar",
+                        //     MetricValue = 1,
+                        //     MetricDate = DateOnly.FromDateTime(DateTime.UtcNow),
+                        // };
+                        // if (getSalesPerformance == null)
+                        // {
+                        //     _context.SalesPersonPerformances.Add(addSalesPerformance);
+                        //     await _context.SaveChangesAsync();
+                        // }
+                        // else
+                        // {
+                        //     getSalesPerformance.MetricValue += 1;
+                        //     _context.SalesPersonPerformances.Update(getSalesPerformance);
+                        //     await _context.SaveChangesAsync();
+                        // }
+
+                        var surveyAddress = $"https://localhost:44318/survey-kepuasan/{getNotificationById.CustomerId}/{getNotificationById.DealerId}/{salesActivity.SalesPersonId}/{salesActivity.ConsultationId}/ConsultationService";
+
+                        var reqEmail = new EmailNotification
                         {
-                            SalesPersonId = salesActivity.SalesPersonId,
-                            MetricType = "ConsultationCar",
-                            MetricValue = 1,
-                            MetricDate = DateOnly.FromDateTime(DateTime.UtcNow),
+                            ToEmail = dataForBodyEmail?.CustomerEmail,
+                            Subject = "Survey Feedback From Velora",
+                            Body = $"<div style='font-family :Arial, sans-serif;'>" +
+                                    $"<h2>Dear {dataForBodyEmail?.CustomerName},</h2>" +
+                                    $"<p>Here is a quick survey to help us improve our services:</p>" +
+                                    $"<a href='{surveyAddress}' style='color: #007bff; text-decoration: none;'>Take the Survey</a>" +
+                                    $"<p style='margin-bottom: 20px;'>If you have any questions, feel free to reach out to us.</p>" +
+                                    $"<p>Best regards,<br />The Velora Team</p>" +
+                                    $"</div>"
                         };
-                        if (getSalesPerformance == null)
+                        Console.WriteLine($"Sending email to: {reqEmail.ToEmail}");
+                        if (reqEmail.ToEmail != null)
                         {
-                            _context.SalesPersonPerformances.Add(addSalesPerformance);
-                            await _context.SaveChangesAsync();
-                        }
-                        else
-                        {
-                            getSalesPerformance.MetricValue += 1;
-                            _context.SalesPersonPerformances.Update(getSalesPerformance);
-                            await _context.SaveChangesAsync();
+                            await _emailNotification.SendEmailAsync(reqEmail.ToEmail, reqEmail.Subject, reqEmail.Body);
                         }
 
                         await transaction.CommitAsync();
@@ -172,8 +210,24 @@ namespace ClassLibrary.DAL.DAL
                     if (salesActivity != null)
                     {
                         salesActivity.Details = result;
+                        salesActivity.ActivityType = "TestDriveCompleted";
                         _context.SalesActivityLogs.Update(salesActivity);
                         await _context.SaveChangesAsync();
+                        Console.WriteLine($"SalesActivityLog updated: {JsonSerializer.Serialize(salesActivity)}");
+
+                        var dataForBodyEmail = await _context.Notifications
+                        .Where(n => n.TestDriveId == salesActivity.TestDriveId && n.NotificationType == "TestDriveRequestHandled")
+                        .Join(_context.Customers,
+                            n => n.CustomerId,
+                            c => c.CustomerId,
+                            (n, c) => new
+                            {
+                                CustomerName = $"{c.FirstName} {c.LastName}",
+                                CustomerEmail = c.Email
+                            })
+                        .FirstOrDefaultAsync();
+
+                        Console.WriteLine($"Customer data for email: {dataForBodyEmail?.CustomerName}, {dataForBodyEmail?.CustomerEmail}");
 
                         var getNotificationById = await _context.Notifications
                             .FirstOrDefaultAsync(n => n.NotificationId == salesActivity.NotificationId && n.NotificationType == "TestDriveRequestHandled");
@@ -192,27 +246,52 @@ namespace ClassLibrary.DAL.DAL
                             }
                         }
 
-                        var getSalesPerformance = await _context.SalesPersonPerformances
-                            .FirstOrDefaultAsync(sp => sp.SalesPersonId == salesActivity.SalesPersonId && sp.MetricType == "TestDriveCar" && sp.MetricDate == DateOnly.FromDateTime(DateTime.UtcNow));
+                        // var getSalesPerformance = await _context.SalesPersonPerformances
+                        //     .FirstOrDefaultAsync(sp => sp.SalesPersonId == salesActivity.SalesPersonId && sp.MetricType == "TestDriveCar" && sp.MetricDate == DateOnly.FromDateTime(DateTime.UtcNow));
 
 
-                        var addSalesPerformance = new SalesPersonPerformance
+                        // var addSalesPerformance = new SalesPersonPerformance
+                        // {
+                        //     SalesPersonId = salesActivity.SalesPersonId,
+                        //     MetricType = "TestDriveCar",
+                        //     MetricValue = 1,
+                        //     MetricDate = DateOnly.FromDateTime(DateTime.UtcNow),
+                        // };
+                        // if (getSalesPerformance == null)
+                        // {
+                        //     await _context.SalesPersonPerformances.AddAsync(addSalesPerformance);
+                        // }
+                        // else
+                        // {
+                        //     getSalesPerformance.MetricValue += 1;
+                        //     _context.SalesPersonPerformances.Update(getSalesPerformance);
+                        // }
+                      
+
+                        if (dataForBodyEmail == null)
                         {
-                            SalesPersonId = salesActivity.SalesPersonId,
-                            MetricType = "TestDriveCar",
-                            MetricValue = 1,
-                            MetricDate = DateOnly.FromDateTime(DateTime.UtcNow),
+                            throw new NotFoundException("Customer email not found for the sales activity.");
+                        }
+
+                        var surveyAddress = $"https://localhost:44318/survey-kepuasan/{getNotificationById.CustomerId}/{getNotificationById.DealerId}/{salesActivity.SalesPersonId}/{salesActivity.TestDriveId}/TestDriveService";
+
+                        var reqEmail = new EmailNotification
+                        {
+                            ToEmail = dataForBodyEmail?.CustomerEmail,
+                            Subject = "Survey Feedback From Velora",
+                            Body = $"<div style='font-family :Arial, sans-serif;'>" +
+                                    $"<h2>Dear {dataForBodyEmail?.CustomerName},</h2>" +
+                                    $"<p>Here is a quick survey to help us improve our services:</p>" +
+                                    $"<a href='{surveyAddress}' style='color: #007bff; text-decoration: none;'>Take the Survey</a>" +
+                                    $"<p style='margin-bottom: 20px;'>If you have any questions, feel free to reach out to us.</p>" +
+                                    $"<p>Best regards,<br />The Velora Team</p>" +
+                                    $"</div>"
                         };
-                        if (getSalesPerformance == null)
+                        Console.WriteLine($"Sending email to: {reqEmail.ToEmail}");
+                        if (reqEmail.ToEmail != null)
                         {
-                            await _context.SalesPersonPerformances.AddAsync(addSalesPerformance);
+                            await _emailNotification.SendEmailAsync(reqEmail.ToEmail, reqEmail.Subject, reqEmail.Body);
                         }
-                        else
-                        {
-                            getSalesPerformance.MetricValue += 1;
-                            _context.SalesPersonPerformances.Update(getSalesPerformance);
-                        }
-                        await _context.SaveChangesAsync();
 
                         await transaction.CommitAsync();
                         return true;

@@ -50,3 +50,21 @@ D:\Users\bsi80252\Exercise\Learn C#\Velora App\VeloraApp\ClassLibrary.DAL\obj\De
 D:\Users\bsi80252\Exercise\Learn C#\Velora App\VeloraApp\ClassLibrary.DAL\obj\Debug\net8.0\DealerApi.DAL.pdb
 D:\Users\bsi80252\Exercise\Learn C#\Velora App\VeloraApp\ClassLibrary.DAL\obj\Debug\net8.0\DealerApi.DAL.genruntimeconfig.cache
 D:\Users\bsi80252\Exercise\Learn C#\Velora App\VeloraApp\ClassLibrary.DAL\obj\Debug\net8.0\ref\DealerApi.DAL.dll
+C:\ANAS\Project NET\VeloraAppCore\VeloraApp\ClassLibrary.DAL\bin\Debug\net8.0\DealerApi.DAL.deps.json
+C:\ANAS\Project NET\VeloraAppCore\VeloraApp\ClassLibrary.DAL\bin\Debug\net8.0\DealerApi.DAL.runtimeconfig.json
+C:\ANAS\Project NET\VeloraAppCore\VeloraApp\ClassLibrary.DAL\bin\Debug\net8.0\DealerApi.DAL.dll
+C:\ANAS\Project NET\VeloraAppCore\VeloraApp\ClassLibrary.DAL\bin\Debug\net8.0\DealerApi.DAL.pdb
+C:\ANAS\Project NET\VeloraAppCore\VeloraApp\ClassLibrary.DAL\bin\Debug\net8.0\DealerApi.Entities.dll
+C:\ANAS\Project NET\VeloraAppCore\VeloraApp\ClassLibrary.DAL\bin\Debug\net8.0\DealerApi.Entities.pdb
+C:\ANAS\Project NET\VeloraAppCore\VeloraApp\ClassLibrary.DAL\obj\Debug\net8.0\DealerApi.DAL.csproj.AssemblyReference.cache
+C:\ANAS\Project NET\VeloraAppCore\VeloraApp\ClassLibrary.DAL\obj\Debug\net8.0\DealerApi.DAL.GeneratedMSBuildEditorConfig.editorconfig
+C:\ANAS\Project NET\VeloraAppCore\VeloraApp\ClassLibrary.DAL\obj\Debug\net8.0\DealerApi.DAL.AssemblyInfoInputs.cache
+C:\ANAS\Project NET\VeloraAppCore\VeloraApp\ClassLibrary.DAL\obj\Debug\net8.0\DealerApi.DAL.AssemblyInfo.cs
+C:\ANAS\Project NET\VeloraAppCore\VeloraApp\ClassLibrary.DAL\obj\Debug\net8.0\DealerApi.DAL.csproj.CoreCompileInputs.cache
+C:\ANAS\Project NET\VeloraAppCore\VeloraApp\ClassLibrary.DAL\obj\Debug\net8.0\DealerApi.DAL.sourcelink.json
+C:\ANAS\Project NET\VeloraAppCore\VeloraApp\ClassLibrary.DAL\obj\Debug\net8.0\DealerAp.A56045D1.Up2Date
+C:\ANAS\Project NET\VeloraAppCore\VeloraApp\ClassLibrary.DAL\obj\Debug\net8.0\DealerApi.DAL.dll
+C:\ANAS\Project NET\VeloraAppCore\VeloraApp\ClassLibrary.DAL\obj\Debug\net8.0\refint\DealerApi.DAL.dll
+C:\ANAS\Project NET\VeloraAppCore\VeloraApp\ClassLibrary.DAL\obj\Debug\net8.0\DealerApi.DAL.pdb
+C:\ANAS\Project NET\VeloraAppCore\VeloraApp\ClassLibrary.DAL\obj\Debug\net8.0\DealerApi.DAL.genruntimeconfig.cache
+C:\ANAS\Project NET\VeloraAppCore\VeloraApp\ClassLibrary.DAL\obj\Debug\net8.0\ref\DealerApi.DAL.dll
